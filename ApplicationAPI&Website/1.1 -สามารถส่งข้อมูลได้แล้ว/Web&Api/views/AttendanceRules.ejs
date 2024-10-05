@@ -1,0 +1,106 @@
+<!-- views/AttendanceRules.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Rules - <%= courseName %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Attendance Rules for <%= courseName %></h1>
+        <h2>Course Code: <%= courseCode %>, Section: <%= section %></h2>
+        <a href="/students/<%= courseCode %>/<%= section %>" class="btn btn-secondary ">Back to View</a>
+        <form id="attendanceRuleForm" class="mb-4">
+            <div class="mb-3">
+                <label for="ruleDate" class="form-label">Date</label>
+                <input type="date" id="ruleDate" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="presentUntil" class="form-label">Present Until</label>
+                <input type="time" id="presentUntil" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="lateUntil" class="form-label">Late Until</label>
+                <input type="time" id="lateUntil" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add/Update Rule</button>
+        </form>
+
+        <table id="attendanceRulesTable" class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Present Until</th>
+                    <th>Late Until</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% attendanceRules.forEach(rule => { %>
+                    <tr>
+                        <td><%= rule.date %></td>
+                        <td><%= rule.present_until %></td>
+                        <td><%= rule.late_until %></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-rule" data-id="<%= rule.id %>">Edit</button>
+                            <button class="btn btn-sm btn-danger delete-rule" data-id="<%= rule.id %>">Delete</button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.getElementById('attendanceRuleForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const date = document.getElementById('ruleDate').value;
+        const presentUntil = document.getElementById('presentUntil').value;
+        const lateUntil = document.getElementById('lateUntil').value;
+
+        fetch('/api/attendance-rules', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                courseCode: '<%= courseCode %>',
+                section: '<%= section %>',
+                date,
+                presentUntil,
+                lateUntil
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Attendance rule saved successfully');
+                location.reload();
+            } else {
+                alert('Error saving attendance rule');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error saving attendance rule');
+        });
+    });
+
+    // Add event listeners for edit and delete buttons
+    document.querySelectorAll('.edit-rule').forEach(button => {
+        button.addEventListener('click', function() {
+            // Implement edit functionality
+        });
+    });
+
+    document.querySelectorAll('.delete-rule').forEach(button => {
+        button.addEventListener('click', function() {
+            // Implement delete functionality
+        });
+    });
+    </script>
+</body>
+</html>

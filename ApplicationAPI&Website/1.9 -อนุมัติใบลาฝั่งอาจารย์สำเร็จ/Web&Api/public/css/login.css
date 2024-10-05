@@ -1,0 +1,231 @@
+*{
+    font-family: 'Prompt',sans-serif;
+}
+.wrapper{
+    background: #ececec;
+    padding:0 20px 0 20px;
+    background: #743ae1;
+}
+.main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.row{
+    width: 900px;
+    height: 550px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.2);
+}
+.side-image{
+    background-image: url("/image/up.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    border-radius: 10px 0 0 10px;
+}
+img{
+    width: 35px;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+.text{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.text p{
+    color: #fff;
+    font-size: 18px;
+}
+i{
+    font-weight: 400;
+    font-size: 15px;
+}
+.right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.input-box{
+    width: 330px;
+    box-sizing: border-box;
+}
+.input-box header{
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 45px;
+}
+.input-field{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 0 10px 0 10px;
+}
+.input{
+    height: 45px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    outline: none;
+    margin-bottom: 20px;
+    color: #40414a;
+}
+.input-box .input-field label{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    pointer-events: none;
+    transition: .5s;
+}
+.input-field .input:focus ~ label{
+    top: -10px;
+    font-size: 13px;
+}
+.input-field .input:valid ~ label{
+    top: -10px;
+    font-size: 13px;
+    color: #5d5076;
+}
+.input-field .input:focus  , .input-field .input:valid {
+   border-bottom: 1px solid #743ae1;
+}
+.submit{
+    border: none;
+    outline: none;
+    height: 45px;
+    background: #ececec;
+    border-radius: 5px;
+    transition: .4s;
+    box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.2);
+}
+.submit:hover{
+    background: rgba(104, 37, 156, 0.9);
+    color: #fff;
+}
+.signin{
+    text-align: center;
+    font-size: small;
+    margin-top: 25px;
+}
+.span a{
+    text-decoration: none;
+    font-weight: 700;
+    color: #000;
+    transition: .5s;
+}
+span a:hover{
+    text-decoration: underline;
+    color: #000;
+}
+@media only screen and (max-width: 768px){
+    .side-image{
+        border-radius: 10px 10px 0 0;
+    }
+    img{
+        width: 35px;
+        position: absolute;
+        top: 20px;
+        left: 47%;
+    }
+    .text{
+        position: absolute;
+        top: 70%;
+        text-align: center;
+    }
+    .text p,i{
+        font-size: 17px;
+    }
+    .row{
+        max-width: 420px;
+        width: 100%;
+    }
+}
+
+/* เพิ่มการตั้งค่าสำหรับ select */
+.input-field select {
+    height: 45px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    outline: none;
+    margin-bottom: 20px;
+    color: #40414a;
+    font-size: 16px;
+    transition: border-color 0.4s;
+}
+.input-field select:focus, .input-field select:valid {
+    border-bottom: 1px solid #743ae1;  /* เปลี่ยนเป็นสีเดียวกับฟิลด์อื่นเมื่อเลือก */
+}
+
+.input-field select option {
+    background-color: #ececec;
+    color: #40414a;
+}
+
+.input-field label[for="role"] {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 13px;
+    color: #5d5076;
+}
+.input-field select:focus ~ label,
+.input-field select:valid ~ label {
+    top: -10px;
+    font-size: 13px;
+    color: #5d5076;
+} 
+
+
+/* ปรับแต่งตัวเลือกใน dropdown */
+.input-field select {
+    height: 45px;
+    width: 100%;
+    background-color: transparent; /* พื้นหลังโปร่งใส */
+    color: #40414a;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.4s;
+    appearance: none; /* ลบสไตล์ดั้งเดิมของเบราว์เซอร์ */
+    -webkit-appearance: none; /* ลบสไตล์ดั้งเดิมสำหรับ WebKit เบราว์เซอร์ */
+}
+
+
+/* เปลี่ยนสีพื้นหลังของตัวเลือกเมื่อ hover */
+.input-field select option:hover {
+    background-color: #ececec;
+    color: #743ae1; /* สีตรงกับฟิลด์ที่ถูกเลือก */
+}
+
+/* ปรับสีพื้นหลังตัวเลือกที่ถูกเลือก */
+.input-field select:focus option:checked {
+    background-color: #743ae1;
+    color: #ececec;
+}
+
+/* ปรับแต่งปุ่มเมื่อเป็น focused */
+.input-field select:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+header{
+    font-weight: 900;
+    font-size: 20px;
+}
+
+body {
+    font-weight: 400;
+    font-size: 20px;  
+    color: #333;  
+}

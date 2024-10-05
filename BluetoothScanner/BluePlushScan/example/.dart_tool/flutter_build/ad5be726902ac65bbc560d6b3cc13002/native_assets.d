@@ -1,0 +1,1 @@
+ C:\\Users\\bawkt\\Downloads\\flutter_blue_plus-1.32.9\\example\\.dart_tool\\flutter_build\\ad5be726902ac65bbc560d6b3cc13002\\native_assets.yaml: 

@@ -1,0 +1,138 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.lib.flutter_blue_plus_example"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+8-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="33" />
+9-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml
+10
+11    <!-- Allow Bluetooth -->
+12    <uses-feature
+12-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:4:6-91
+13        android:name="android.hardware.bluetooth_le"
+13-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:4:20-64
+14        android:required="true" />
+14-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:4:65-88
+15
+16    <!--
+17     New Bluetooth permissions in Android 12
+18     https://developer.android.com/about/versions/12/features/bluetooth-permissions
+19    -->
+20    <uses-permission
+20-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:8:6-121
+21        android:name="android.permission.BLUETOOTH_SCAN"
+21-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:8:23-71
+22        android:usesPermissionFlags="neverForLocation" />
+22-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:8:72-118
+23    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+23-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:9:6-77
+23-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:9:23-74
+24
+25    <!-- legacy for Android 11 or lower -->
+26    <uses-permission
+26-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:12:6-96
+27        android:name="android.permission.BLUETOOTH"
+27-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:12:23-66
+28        android:maxSdkVersion="30" />
+28-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:12:67-93
+29    <uses-permission
+29-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:13:6-102
+30        android:name="android.permission.BLUETOOTH_ADMIN"
+30-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:13:23-72
+31        android:maxSdkVersion="30" />
+31-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:13:73-99
+32    <uses-permission
+32-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:14:6-106
+33        android:name="android.permission.ACCESS_FINE_LOCATION"
+33-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:14:23-77
+34        android:maxSdkVersion="30" />
+34-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:14:78-104
+35
+36    <!-- legacy for Android 9 or lower -->
+37    <uses-permission
+37-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:18:6-109
+38        android:name="android.permission.ACCESS_COARSE_LOCATION"
+38-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:18:23-79
+39        android:maxSdkVersion="28" />
+39-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:18:80-106
+40
+41    <application
+42        android:name="android.app.Application"
+42-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:23:10-43
+43        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+43-->[androidx.core:core:1.6.0] C:\Users\bawkt\.gradle\caches\transforms-3\31ab38efe62c03fc5ca8aaa65525b240\transformed\core-1.6.0\AndroidManifest.xml:24:18-86
+44        android:icon="@mipmap/ic_launcher"
+44-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:24:10-44
+45        android:label="flutter_blue_plus_example" >
+45-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:22:10-51
+46        <activity
+46-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:25:10-45:21
+47            android:name="com.lib.flutter_blue_plus_example.MainActivity"
+47-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:26:14-42
+48            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+48-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:30:14-164
+49            android:exported="true"
+49-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:27:14-37
+50            android:hardwareAccelerated="true"
+50-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:31:14-48
+51            android:launchMode="singleTop"
+51-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:28:14-44
+52            android:theme="@style/LaunchTheme"
+52-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:29:14-48
+53            android:windowSoftInputMode="adjustResize" >
+53-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:32:14-56
+54
+55            <!--
+56                 Specifies an Android theme to apply to this Activity as soon as
+57                 the Android process has started. This theme is visible to the user
+58                 while the Flutter UI initializes. After that, this theme continues
+59                 to determine the Window background behind the Flutter UI.
+60            -->
+61            <meta-data
+61-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:37:13-40:15
+62                android:name="io.flutter.embedding.android.NormalTheme"
+62-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:38:18-73
+63                android:resource="@style/NormalTheme" />
+63-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:39:18-55
+64
+65            <intent-filter>
+65-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:41:13-44:30
+66                <action android:name="android.intent.action.MAIN" />
+66-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:42:18-69
+66-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:42:26-67
+67
+68                <category android:name="android.intent.category.LAUNCHER" />
+68-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:43:18-77
+68-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:43:28-75
+69            </intent-filter>
+70        </activity>
+71        <!--
+72              Don't delete the meta-data below.
+73             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+74        -->
+75        <meta-data
+75-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:48:10-50:34
+76            android:name="flutterEmbedding"
+76-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:49:14-45
+77            android:value="2" />
+77-->C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\android\app\src\main\AndroidManifest.xml:50:14-31
+78
+79        <uses-library
+79-->[androidx.window:window:1.0.0-beta04] C:\Users\bawkt\.gradle\caches\transforms-3\531c513b9c78c145dd99406aef933e8a\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:25:9-27:40
+80            android:name="androidx.window.extensions"
+80-->[androidx.window:window:1.0.0-beta04] C:\Users\bawkt\.gradle\caches\transforms-3\531c513b9c78c145dd99406aef933e8a\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:26:13-54
+81            android:required="false" />
+81-->[androidx.window:window:1.0.0-beta04] C:\Users\bawkt\.gradle\caches\transforms-3\531c513b9c78c145dd99406aef933e8a\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:27:13-37
+82        <uses-library
+82-->[androidx.window:window:1.0.0-beta04] C:\Users\bawkt\.gradle\caches\transforms-3\531c513b9c78c145dd99406aef933e8a\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:28:9-30:40
+83            android:name="androidx.window.sidecar"
+83-->[androidx.window:window:1.0.0-beta04] C:\Users\bawkt\.gradle\caches\transforms-3\531c513b9c78c145dd99406aef933e8a\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:29:13-51
+84            android:required="false" />
+84-->[androidx.window:window:1.0.0-beta04] C:\Users\bawkt\.gradle\caches\transforms-3\531c513b9c78c145dd99406aef933e8a\transformed\jetified-window-1.0.0-beta04\AndroidManifest.xml:30:13-37
+85    </application>
+86
+87</manifest>

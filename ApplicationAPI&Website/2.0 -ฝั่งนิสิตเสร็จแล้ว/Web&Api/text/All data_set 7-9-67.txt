@@ -1,0 +1,40 @@
+Table:users
+first_name 	varchar(100) 
+last_name 	varchar(100) 
+id_number 	varchar(30) PK 
+password 	varchar(255) 
+role 		enum('teacher','student')
+
+Table:students
+id 		int AI PK 
+id_number 	varchar(20) 
+enrollment_year int
+
+Table: enrollments
+enrollment_id 	int AI PK 
+student_id 	varchar(20) 
+course_code 	varchar(20) 
+section 	int
+
+Table: courses
+course_id 	int AI PK 
+course_code 	varchar(20) 
+course_name 	varchar(255) 
+section 	int 
+year 		int 
+teacher_id 	varchar(30)
+
+Table: bluetooth_attendance
+id 		int AI PK 
+student_id 	varchar(20) 
+major 		int 
+minor 		int 
+timestamp 	datetime
+
+Table: attendance
+id 		int AI PK 
+course_code 	varchar(20) 
+section 	int 
+student_id 	varchar(20) 
+date 		date 
+status 		enum('present','absent','late')

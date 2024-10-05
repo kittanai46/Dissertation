@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.lib.flutter_blue_plus-merged_res-9:/layout/notification_template_part_chronometer.xml",
+        "source": "com.lib.flutter_blue_plus-core-1.6.0-0:/layout/notification_template_part_chronometer.xml"
+    },
+    {
+        "merged": "com.lib.flutter_blue_plus-merged_res-9:/layout/notification_template_part_time.xml",
+        "source": "com.lib.flutter_blue_plus-core-1.6.0-0:/layout/notification_template_part_time.xml"
+    },
+    {
+        "merged": "com.lib.flutter_blue_plus-merged_res-9:/layout/custom_dialog.xml",
+        "source": "com.lib.flutter_blue_plus-core-1.6.0-0:/layout/custom_dialog.xml"
+    }
+]

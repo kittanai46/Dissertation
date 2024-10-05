@@ -1,0 +1,4 @@
+#Wed Jul 31 16:02:57 ICT 2024
+base.0=C\:\\Users\\bawkt\\Downloads\\flutter_blue_plus-1.32.9\\example\\build\\app\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

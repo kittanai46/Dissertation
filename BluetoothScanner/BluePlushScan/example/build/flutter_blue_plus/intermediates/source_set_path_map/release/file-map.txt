@@ -1,0 +1,11 @@
+com.lib.flutter_blue_plus-core-1.6.0-0 C:\Users\bawkt\.gradle\caches\transforms-3\31ab38efe62c03fc5ca8aaa65525b240\transformed\core-1.6.0\res
+com.lib.flutter_blue_plus-jetified-window-1.0.0-beta04-1 C:\Users\bawkt\.gradle\caches\transforms-3\531c513b9c78c145dd99406aef933e8a\transformed\jetified-window-1.0.0-beta04\res
+com.lib.flutter_blue_plus-jetified-window-java-1.0.0-beta04-2 C:\Users\bawkt\.gradle\caches\transforms-3\8f549e3962b2d312ffb59086ce3b5d3f\transformed\jetified-window-java-1.0.0-beta04\res
+com.lib.flutter_blue_plus-jetified-annotation-experimental-1.1.0-3 C:\Users\bawkt\.gradle\caches\transforms-3\b6068c0d22df107c594ab952b593da79\transformed\jetified-annotation-experimental-1.1.0\res
+com.lib.flutter_blue_plus-main-4 C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\android\src\main\res
+com.lib.flutter_blue_plus-release-5 C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\android\src\release\res
+com.lib.flutter_blue_plus-pngs-6 C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\flutter_blue_plus\generated\res\pngs\release
+com.lib.flutter_blue_plus-resValues-7 C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\flutter_blue_plus\generated\res\resValues\release
+com.lib.flutter_blue_plus-mergeReleaseResources-8 C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\flutter_blue_plus\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.lib.flutter_blue_plus-mergeReleaseResources-9 C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\flutter_blue_plus\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.lib.flutter_blue_plus-merged_res-10 C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\flutter_blue_plus\intermediates\merged_res\release

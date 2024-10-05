@@ -1,0 +1,35 @@
+<variant
+    name="release"
+    package="com.lib.flutter_blue_plus_example"
+    minSdkVersion="21"
+    targetSdkVersion="33"
+    mergedManifest="C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\intermediates\merged_manifest\release\AndroidManifest.xml"
+    manifestMergeReport="C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\outputs\logs\manifest-merger-release-report.txt"
+    proguardFiles="C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\intermediates\default_proguard_files\global\proguard-android.txt-8.0.2;C:\src\flutter\packages\flutter_tools\gradle\flutter_proguard_rules.pro;proguard-rules.pro"
+    partialResultsDir="C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\intermediates\lint_vital_partial_results\release\out">
+  <buildFeatures
+      namespacing="REQUIRED"/>
+  <sourceProviders>
+    <sourceProvider
+        manifests="src\main\AndroidManifest.xml"
+        javaDirectories="src\main\java;src\release\java;src\main\kotlin;src\release\kotlin"
+        resDirectories="src\main\res;src\release\res"
+        assetsDirectories="src\main\assets;src\release\assets"/>
+  </sourceProviders>
+  <testSourceProviders>
+  </testSourceProviders>
+  <testFixturesSourceProviders>
+  </testFixturesSourceProviders>
+  <manifestPlaceholders>
+    <placeholder
+        name="applicationName"
+        value="android.app.Application" />
+  </manifestPlaceholders>
+  <mainArtifact
+      classOutputs="C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\intermediates\javac\release\classes;C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\intermediates\compile_and_runtime_not_namespaced_r_class_jar\release\R.jar"
+      applicationId="com.lib.flutter_blue_plus_example"
+      generatedSourceFolders="C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\generated\ap_generated_sources\release\out;C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\generated\source\buildConfig\release"
+      generatedResourceFolders="C:\Users\bawkt\Downloads\flutter_blue_plus-1.32.9\example\build\app\generated\res\resValues\release"
+      desugaredMethodsFiles="C:\Users\bawkt\.gradle\caches\transforms-3\aac03b4dd8dc31ebe2f34c0ceb7ec648\transformed\D8BackportedDesugaredMethods.txt">
+  </mainArtifact>
+</variant>

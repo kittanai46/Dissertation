@@ -1,0 +1,59 @@
+name: ClassTracking
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  flutter_launcher_icons: ^0.13.1
+  image_picker: ^0.8.7+4
+  shared_preferences: ^2.0.15
+  permission_handler: ^10.2.0
+  flutter_blue_plus: ^1.5.2
+  http: ^0.13.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "Images/NewLogo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/Images/
+    - assets/Images/icon01.png
+    - assets/Images/icon02.png
+    - assets/Images/icon03.png
+    - assets/Images/icon04.png
+    - assets/Images/icon05.png
+    - assets/Images/icon06.png
+    - assets/Images/icon07.png
+    - assets/Images/usericon.png
+    - assets/Images/pack1.png
+    - assets/Images/pack2.png
+    - assets/Images/pack3.png
+    - assets/Images/pack4.png
+    - assets/Images/arrow.png
+    - assets/Images/exit.png
+    - assets/Images/Homeicon.png
+    - assets/Images/log1.png
+    - assets/Images/log2.png
+    - assets/Images/Bg.png
+    - assets/Images/main_bg.png
+    - assets/Images/d1.png
+    - assets/Images/bluetooth.png
+    - assets/Images/+.png
