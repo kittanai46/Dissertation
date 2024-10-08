@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... (ส่วน head คงเดิม) ... -->
+    <style>
+        .bg-leave { background-color: #743ae1; color: white; }
+        .edited { font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- ... (ส่วน sidebar คงเดิม) ... -->
+        <div class="main p-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>Edit Attendance - <%= courseName %></h1>
+                    <a href="/students_class/<%= courseCode %>/<%= section %>" class="btn btn-secondary">Back to View</a>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>รหัสนิสิต</th>
+                            <th>ชื่อ</th>
+                            <th>นามสกุล</th>
+                            <% dates.forEach(function(date) { %>
+                                <th><%= date.short_date %></th>
+                            <% }); %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% students.forEach(function(student) { %>
+                            <tr>
+                                <td><%= student.id_number %></td>
+                                <td><%= student.first_name %></td>
+                                <td><%= student.last_name %></td>
+                                <% student.attendance.forEach(function(attendance, dateIndex) { %>
+                                    <td class="attendance-cell <%= attendance.status === 'present' ? 'bg-success' : attendance.status === 'late' ? 'bg-warning' : attendance.status === 'absent' ? 'bg-danger' : attendance.status === 'leave' ? 'bg-leave' : '' %>">
+                                        <select class="form-select attendance-select" 
+                                                data-student-id="<%= student.id_number %>" 
+                                                data-date="<%= dates[dateIndex].date %>"
+                                                data-original-status="<%= attendance.status %>"
+                                                data-original-time="<%= attendance.check_in_time %>">
+                                            <option value="">-</option>
+                                            <option value="present" <%= attendance.status === 'present' ? 'selected' : '' %>>Present</option>
+                                            <option value="absent" <%= attendance.status === 'absent' ? 'selected' : '' %>>Absent</option>
+                                            <option value="late" <%= attendance.status === 'late' ? 'selected' : '' %>>Late</option>
+                                            <option value="leave" <%= attendance.status === 'leave' ? 'selected' : '' %>>Leave</option>
+                                        </select>
+                                        <div class="attendance-info">
+                                            <%= attendance.check_in_time ? attendance.check_in_time : '' %>
+                                        </div>
+                                    </td>
+                                <% }); %>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <button id="saveAttendance" class="btn btn-primary mt-3">Save Attendance</button>
+            </div>
+        </div>
+    </div>
+    <!-- ... (ส่วน script อื่นๆ คงเดิม) ... -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const attendanceSelects = document.querySelectorAll('.attendance-select');
+        
+        attendanceSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const cell = this.closest('.attendance-cell');
+                const infoDiv = cell.querySelector('.attendance-info');
+                const originalStatus = this.getAttribute('data-original-status');
+                const originalTime = this.getAttribute('data-original-time');
+                
+                // ลบ class เดิมและเพิ่ม class ใหม่ตามสถานะ
+                cell.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-leave');
+                switch(this.value) {
+                    case 'present': cell.classList.add('bg-success'); break;
+                    case 'late': cell.classList.add('bg-warning'); break;
+                    case 'absent': cell.classList.add('bg-danger'); break;
+                    case 'leave': cell.classList.add('bg-leave'); break;
+                }
+                
+                // อัพเดทข้อความใน div
+                if (this.value && this.value !== originalStatus) {
+                    infoDiv.textContent = 'แก้ไข';
+                    infoDiv.classList.add('edited');
+                } else {
+                    infoDiv.textContent = originalTime || '';
+                    infoDiv.classList.remove('edited');
+                }
+            });
+        });
+
+        document.getElementById('saveAttendance').addEventListener('click', function() {
+            const attendance = {};
+
+            attendanceSelects.forEach(function(select) {
+                const studentId = select.getAttribute('data-student-id');
+                let date = select.getAttribute('data-date');
+                const status = select.value;
+                const originalStatus = select.getAttribute('data-original-status');
+
+                // แปลงวันที่ให้อยู่ในรูปแบบ YYYY-MM-DD (MySQL format)
+                date = new Date(date).toISOString().split('T')[0];
+
+                // บันทึกเฉพาะข้อมูลที่มีการเปลี่ยนแปลง
+                if (status && status !== originalStatus) {
+                    if (!attendance[studentId]) {
+                        attendance[studentId] = {};
+                    }
+                    attendance[studentId][date] = status;
+                }
+            });
+
+            // สร้าง request body สำหรับส่งไปยัง backend
+            const body = {
+                courseCode: '<%= courseCode %>',
+                section: '<%= section %>',
+                attendance: attendance
+            };
+
+            // ส่งข้อมูลไปยัง backend ผ่าน Fetch API
+            fetch('/save-attendance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Attendance saved successfully!');
+                    window.location.reload(); // รีเฟรชหน้าเพื่อดึงข้อมูลใหม่จากฐานข้อมูล
+                } else {
+                    alert('Error saving attendance.');
+                }
+            })        
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while saving attendance.');
+            });
+        });
+    });
+    </script>
+</body>
+</html>

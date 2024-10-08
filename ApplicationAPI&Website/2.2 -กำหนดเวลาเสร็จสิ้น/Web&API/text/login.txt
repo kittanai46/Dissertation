@@ -1,0 +1,81 @@
+setInterval(async () => {
+    const now = new Date(); // เวลาปัจจุบัน
+
+    try {
+        // ดึงข้อมูลกฎการเช็คชื่อ (attendance_rules) ที่เกี่ยวข้อง
+        const [rules] = await dbConnection.execute(
+            SELECT * FROM attendance_rules
+            WHERE date = CURDATE() -- ตรวจสอบกฎการเช็คชื่อสำหรับวันนี้
+        );
+
+        if (rules.length === 0) {
+            console.log('No attendance rules found for today.');
+            return;
+        }
+
+        for (const rule of rules) {
+            // สร้างวันที่ปัจจุบันและนำเวลา late_until มาผนวก
+            const lateUntilString = ${now.toISOString().split('T')[0]}T${rule.late_until};
+            const lateUntil = new Date(lateUntilString);  // สร้างเวลา late_until เต็มจากข้อมูลในฐานข้อมูล
+
+            // ตรวจสอบว่า lateUntil ถูกต้องหรือไม่
+            if (isNaN(lateUntil.getTime())) {
+                console.error('Invalid lateUntil date:', lateUntil);
+                continue;
+            }
+
+            // แสดงเวลาปัจจุบันและ late_until ในคอนโซลเพื่อดูค่าทั้งสอง
+            console.log(Current server time: ${now});
+            console.log(Late until time for course ${rule.course_code}, section ${rule.section}: ${lateUntil});
+
+            // ตรวจสอบว่าถึงเวลาบันทึก "ขาด" หรือยัง
+            if (now > lateUntil) {
+                console.log('Current time is after late_until, checking absents for course:', rule.course_code, 'section:', rule.section);
+
+                // ดึงเวลาปัจจุบันจากเซิร์ฟเวอร์และแสดงในฟอร์แมต HH:MM:SS
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                console.log(Current server time (formatted): ${hours}:${minutes}:${seconds});
+
+                // ดึงรายชื่อนักเรียนทั้งหมดในรายวิชานี้
+                const [students] = await dbConnection.execute(
+                    SELECT student_id FROM enrollments WHERE course_code = ? AND section = ?
+                , [rule.course_code, rule.section]);
+
+                if (students.length === 0) {
+                    console.log('No students found for this course and section.');
+                    continue;
+                }
+
+                for (const student of students) {
+                    const studentId = student.student_id;
+
+                    // ตรวจสอบว่านักเรียนคนนี้มีการเช็คชื่อในวันนี้แล้วหรือยัง
+                    const [[existingAttendance]] = await dbConnection.execute(
+                        SELECT * FROM attendance WHERE course_code = ? AND section = ? AND student_id = ? AND date = ?
+                    , [rule.course_code, rule.section, studentId, rule.date]);
+
+                    if (!existingAttendance) {
+                        console.log('Student', studentId, 'has not checked in, marking as absent');
+                        // บันทึกสถานะ absent สำหรับนักเรียนที่ไม่ได้เช็คชื่อ
+                        const [result] = await dbConnection.execute(
+                            INSERT INTO attendance (course_code, section, student_id, date, status)
+                            VALUES (?, ?, ?, ?, 'absent')
+                        , [rule.course_code, rule.section, studentId, rule.date]);
+
+                        console.log('Marked student as absent:', studentId, result);
+                    }
+                }
+            } else {
+                console.log(Current time is before late_until for course: ${rule.course_code} section: ${rule.section});
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                console.log(Current server time (formatted): ${hours}:${minutes}:${seconds});
+            }
+        }
+    } catch (error) {
+        console.error('Error checking attendance:', error);
+    }
+}, 30000); // ทำงานทุกๆครึ่ง นาที
