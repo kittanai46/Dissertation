@@ -94,6 +94,11 @@ class _SBox1State extends State<SBox1> {
         textColor = Colors.white;
         backgroundColor = Colors.orange;
         break;
+      case 'leave':
+        displayStatus = 'ลา';
+        textColor = Colors.white;
+        backgroundColor = Color.fromARGB(255, 132, 131, 130);
+        break;
       default:
         displayStatus = status ?? 'ไม่ทราบสถานะ';
         textColor = Colors.black;
