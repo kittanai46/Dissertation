@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/login.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Class Tracking : ลงชื่อเข้าใช้งาน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/image/favicon.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container main">
+            <div class="row">
+                <div class="col-md-6 side-image">
+                    <!-- ----image---- -->  
+                    <img src="/image/tra.png" alt="Image not found">
+                </div>
+                <div class="col-md-6 right">
+                    <div class="input-box">
+                        <header>ลงชื่อเข้าใช้งาน</header>
+                        <!-- แสดงข้อผิดพลาดหากมี -->
+                        <% if (typeof login_errors !== 'undefined') { %>
+                            <ul>
+                                <% login_errors.forEach(function(error) { %>
+                                    <li><%= error %></li>
+                                <% }); %>
+                            </ul>
+                        <% } %>
+                        <form id="loginForm" action="/" method="POST">
+                            <div class="input-field">
+                                <input type="text" name="id_number" class="input" id="id_number" required autocomplete="off">
+                                <label for="id_number">ชื่อผู้ใช้งาน</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="password" name="password" class="input" id="password" required autocomplete="off">
+                                <label for="password">รหัสผ่าน</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="submit" class="submit" value="เข้าสู่ระบบ">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
