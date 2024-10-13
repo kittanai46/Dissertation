@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+::after,
+::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.wrapper {
+    display: flex;
+    min-height: 100vh; /* ทำให้ wrapper มีความสูงเต็มหน้าจอ */
+}
+
+.main {
+    margin-left: 80px; /* เพิ่มระยะห่างจาก sidebar */
+    padding: 20px; /* เพิ่ม padding ภายในเนื้อหา */
+    min-height: 100vh;
+    background-color: #fafbfe;
+    transition: margin-left 0.35s ease-in-out;
+    flex-grow: 1;
+}
+
+#sidebar { 
+    position: fixed; /* ตรึง sidebar ไว้ที่ด้านซ้ายของหน้าจอ */
+    top: 0;
+    left: 0;
+    height: 100vh; /* ทำให้ sidebar มีความสูงเต็มหน้าจอ */
+    width: 80px; /* ความกว้างของ sidebar */
+    z-index: 1000;
+    transition: all .25s ease-in-out;
+    background-color: #743ae1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* เพิ่มการเลื่อนภายใน sidebar หากเนื้อหามีมากเกินไป */
+    overflow-x: hidden; /* ปิดการเลื่อนในแนวนอน */
+    box-sizing: border-box; /* ให้การคำนวณขนาดรวม padding และ border */
+}
+
+.text-center {
+    color: #743ae1;
+}
+
+#sidebar.expand {
+    width: 260px;
+}
+
+.toggle-btn {
+    background-color: transparent;
+    cursor: pointer;
+    border: 0;
+    padding: 1rem 1.5rem;
+}
+
+.toggle-btn i {
+    font-size: 1.5rem;
+    color: #FFF;
+}
+
+.sidebar-logo {
+    margin: auto 0;
+}
+
+.sidebar-logo a {
+    color: #FFF;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+#sidebar:not(.expand) .sidebar-logo,
+#sidebar:not(.expand) a.sidebar-link span {
+    display: none;
+}
+
+.sidebar-nav {
+    padding: 2rem 0;
+    flex: 1 1 auto;
+}
+
+a.sidebar-link {
+    padding: .625rem 1.625rem;
+    color: #FFF;
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link i {
+    font-size: 1.1rem;
+    margin-right: .75rem;
+}
+
+a.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, .075);
+    border-left: 3px solid #3b7ddd;
+}
+
+.sidebar-item {
+    position: relative;
+}
+
+#sidebar:not(.expand) .sidebar-item .sidebar-dropdown {
+    position: absolute;
+    top: 0;
+    left: 70px;
+    background-color: #0e2238;
+    padding: 0;
+    min-width: 15rem;
+    display: none;
+}
+
+#sidebar:not(.expand) .sidebar-item:hover .has-dropdown+.sidebar-dropdown {
+    display: block;
+    max-height: 15em;
+    width: 100%;
+    opacity: 1;
+}
+
+#sidebar.expand .sidebar-link[data-bs-toggle="collapse"]::after {
+    border: solid;
+    border-width: 0 .075rem .075rem 0;
+    content: "";
+    display: inline-block;
+    padding: 2px;
+    position: absolute;
+    right: 1.5rem;
+    top: 1.4rem;
+    transform: rotate(-135deg);
+    transition: all .2s ease-out;
+}
+
+#sidebar.expand .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
+    transform: rotate(45deg);
+    transition: all .2s ease-out;
+}
+
+/* การตั้งค่าสำหรับข้อความกลาง (หัวข้อ Main) */
+.text-center {
+    color: #743ae1;
+    margin-bottom: 2rem;
+}
+
+.image-box {
+    margin-top: 2rem;
+    background-color: #fafbfe;
+    border-radius: 8px;
+    width: 90%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ปุ่ม */
+button.info-box {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button.info-box p {
+    margin: 0;
+    padding: 0;
+    color: #000;
+    font-size: 0.9rem;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.col-md-4 {
+    flex: 0 0 30%;
+    max-width: 30%;
+}
+
+/* กำหนดขนาดของคอลัมน์ Student ID */
+.student-id-header, .student-id {
+    width: 20px; /* กำหนดความกว้าง 50px */
+    text-align: center; /* จัดข้อความให้อยู่กลาง */
+    white-space: nowrap; /* ป้องกันการตัดคำ */
+}
+
+/* กำหนดขนาดของคอลัมน์ Name */
+.name-header {
+    width: 20px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ปรับขนาดคอลัมน์วันที่ */
+.attendance-header {
+    width: 20px; /* ปรับขนาดตามที่ต้องการ */
+    text-align: center;
+}
+
+.attendance-header span {
+    display: block;
+}
+
+/* สไตล์สำหรับตารางโดยรวม */
+table {
+    width: 100%; /* ปรับตารางให้มีขนาดเต็มหน้าจอ */
+    table-layout: fixed; /* บังคับให้คอลัมน์มีขนาดคงที่ตามที่กำหนด */
+    border-collapse: collapse; /* รวมขอบของเซลล์เข้าด้วยกัน */
+    border: 3px solid ; /* ขอบตารางสีม่วง */
+}
+th {
+    background-color: #f4f4f4; /* สีพื้นหลังของหัวตาราง */
+    font-weight: bold;
+}
+th, td {
+    padding: 12px; /* เพิ่ม padding ภายในเซลล์ */
+    border: 1px solid; /* ขอบของเซลล์เป็นสีม่วง */
+    text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+}
+.attendance-header {
+    text-orientation: mixed;
+    white-space: nowrap;
+    padding: 10px 0;
+    text-align: center;
+    }
+.attendance-header span {
+    display: block;
+}
+
+.bg-leave {
+    background-color: #d1ecf1 !important;
+    color: #0c5460 !important;
+}
+.text-dark {
+    color: black !important; /* ข้อความสีดำเข้ม */
+}
+.text-white {
+    color: white !important; /* ข้อความสีขาว */
+}
+/* สไตล์สำหรับสถานะ late เท่านั้น */
+.text-late {
+    color: white;
+    text-shadow: 
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000; /* ขอบรอบอักษรสีดำ */
+}
+
+*{
+    font-family: 'Prompt' ,sans-serif ;
+    font-weight: 500;
+}
+h2 {
+    font-size: 1.2rem; /* ปรับขนาดข้อความให้เล็กลง */
+    color: #743ae1; /* สีของข้อความ */
+    text-align: center; /* จัดข้อความให้อยู่กลาง */
+}
+h1 {
+    color: #743ae1 ;
+}
+/* ปรับสีปุ่มตามธีม */
+.btn-primary {
+    background-color: #743ae1; /* สีม่วงตามธีม */
+    border-color: #743ae1; /* ขอบสีม่วง */
+}
+
+.btn-primary:hover {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อ hover */
+    border-color: #5b32b1;
+}
+
+.btn-primary:active {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อกดค้าง */
+    border-color: #5b32b1;
+    box-shadow: none; /* ลบเงาเมื่อกดค้าง */
+    outline: none;
+}
+
+/* สำหรับปุ่มอื่น ๆ */
+button.info-box {
+    background-color: #fff;
+    border: 2px solid #743ae1; /* ขอบสีม่วง */
+    color: #743ae1; /* ข้อความสีม่วง */
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+button.info-box:hover {
+    background-color: #743ae1;
+    color: #fff; /* ข้อความสีขาวเมื่อ hover */
+}
+/* ปรับสีปุ่มตามธีม */
+.btn-primary {
+    background-color: #743ae1; /* สีม่วงตามธีม */
+    border-color: #743ae1; /* ขอบสีม่วง */
+    color: #fff; /* ข้อความสีขาว */
+}
+
+.btn-primary:hover {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อ hover */
+    border-color: #5b32b1;
+    color: #fff; /* ข้อความยังคงเป็นสีขาว */
+}
+
+.btn-primary:active {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อกดค้าง */
+    border-color: #5b32b1;
+    box-shadow: none; /* ลบเงาเมื่อกดค้าง */
+    outline: none;
+    color: #fff; /* ข้อความยังคงเป็นสีขาว */
+}
+
+/* สำหรับลิงก์ที่เป็นปุ่ม */
+a.btn-primary {
+    text-decoration: none; /* ลบเส้นใต้ลิงก์ */
+    color: #fff; /* ข้อความสีขาว */
+}
+/* ปรับสีปุ่มตามธีมสีม่วง */
+.btn-primary {
+    background-color: #743ae1; /* สีม่วง */
+    border-color: #743ae1; /* ขอบสีม่วง */
+    color: #fff; /* ข้อความสีขาว */
+}
+
+.btn-primary:hover {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อ hover */
+    border-color: #5b32b1; /* ขอบสีเข้มขึ้น */
+    color: #fff; /* ข้อความยังคงเป็นสีขาว */
+}
+
+.btn-primary:active {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อกดค้าง */
+    border-color: #5b32b1; /* ขอบสีเข้มขึ้น */
+    box-shadow: none; /* ลบเงาเมื่อกดค้าง */
+    outline: none; /* ลบเส้นขอบ */
+    color: #fff; /* ข้อความยังคงเป็นสีขาว */
+}
+
+.btn-secondary{
+    background-color: #743ae1; /* สีม่วงตามธีม */
+    border-color: #743ae1; /* ขอบสีม่วง */
+}
+
+.btn-secondary:hover {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อ hover */
+    border-color: #5b32b1;
+}
+
+.btn-secondary:active {
+    background-color: #5b32b1; /* สีม่วงเข้มขึ้นเมื่อกดค้าง */
+    border-color: #5b32b1;
+    box-shadow: none; /* ลบเงาเมื่อกดค้าง */
+    outline: none;
+}

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Tracking : ภาพรวมข้อมูล</title>
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="/image/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/css/Main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        .chart-container-wrapper {
+            display: flex;
+            justify-content: center;
+            /* จัดให้อยู่กลางแนวนอน */
+            align-items: center;
+            /* จัดให้อยู่กลางแนวตั้ง */
+            flex-direction: column;
+            /* จัดให้อยู่ในแนวตั้ง */
+            width: 100%;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .chart-container {
+            width: 80%;
+            max-width: 600px;
+            height: 300px;
+            margin: 20px auto;
+            /* จัดให้อยู่กลางหน้าตามแนวนอน */
+        }
+
+        .main {
+            max-width: 95% !important;
+            padding: 20px !important;
+            background-color: #fafbfe;
+        }
+
+        .block {
+            background-color: transparent !important;
+            color: #743ae1 !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+            text-align: center !important;
+            border: 2px solid #743ae1 !important;
+            box-shadow: 0 4px 8px rgba(116, 58, 225, 0.2) !important;
+            transition: all 0.3s ease !important;
+            width: 100% !important;
+            display: flex !important;
+            /* ใช้ Flexbox */
+            flex-direction: column !important;
+            /* จัดให้อยู่ในแนวตั้ง */
+            align-items: center !important;
+            /* จัดให้อยู่กลางในแนวนอน */
+            justify-content: center !important;
+            /* จัดให้อยู่กลางในแนวตั้ง */
+            height: 100% !important;
+        }
+
+        .content-wrapper {
+            text-align: center;
+        }
+
+        .block:hover {
+            background-color: rgba(116, 58, 225, 0.1);
+            box-shadow: 0 6px 12px rgba(116, 58, 225, 0.3);
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: #743ae1 !important;
+            /* ตั้งสีข้อความของ h2 */
+        }
+
+        .toggle-btn {
+            margin-top: 10px;
+            color: #743ae1;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -7.5px !important;
+        }
+
+        .col-md-4 {
+            flex: 0 0 calc(25% - 15px) !important;
+            max-width: calc(25% - 15px) !important;
+            margin-bottom: 20px !important;
+            padding: 0 7.5px !important;
+        }
+
+        @media (max-width: 1200px) {
+            .col-md-4 {
+                flex: 0 0 calc(50% - 15px) !important;
+                max-width: calc(50% - 15px) !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .col-md-4 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+        }
+
+        #student-list,
+        #late-student-list {
+            list-style: none;
+            /* ลบสัญลักษณ์ bullet ของรายการ */
+            padding: 0;
+            /* ลบ padding ภายใน */
+
+            text-align: center;
+            /* จัดให้อยู่กลาง */
+        }
+
+        #student-list li,
+        #late-student-list li {
+            display: inline-block;
+            /* จัดให้อยู่ในแนวนอน */
+            text-align: center;
+            /* จัดข้อความให้อยู่กลาง */
+        }
+
+        .chart-container {
+            width: 45%;
+            height: 250px;
+            display: inline-block;
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <aside id="sidebar">
+            <div class="d-flex">
+                <button class="toggle-btn" type="button">
+                    <i class="lni lni-grid-alt"></i>
+                </button>
+                <div class="sidebar-logo">
+                    <a href="/">TRACKING</a>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="/classroom" class="sidebar-link">
+                        <i class="lni lni-network"></i>
+                        <span>ห้องเรียน</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/calculate" class="sidebar-link">
+                        <i class="lni lni-calculator"></i>
+                        <span>คำนวณคะแนน</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/graph" class="sidebar-link">
+                        <i class="lni lni-graph"></i>
+                        <span>ภาพรวมข้อมูล</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+                        <i class="lni lni-folder"></i>
+                        <span>เอกสารการลา</span>
+                    </a>
+                    <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="/leave-requests/<%= teacherId %>" class="sidebar-link">การลาที่รออนุมัติ</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/leave-history/<%= teacherId %>" class="sidebar-link">ประวัติการลา</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/notification" class="sidebar-link">
+                        <i class="lni lni-popup"></i>
+                        <span>การแจ้งเตือน</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-link">
+                    <i class="lni lni-exit"></i>
+                    <span>ออกจากระบบ</span>
+                </a>
+            </div>
+        </aside>
+        <div class="main">
+            <div class="container">
+                <div class="text-center">
+                    <h1>ภาพรวมข้อมูล</h1>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <a class="block" id="absent-block" href="#">
+                            <h2>นิสิตที่ขาดเรียนเยอะที่สุด</h2>
+                            <ol id="student-list"></ol>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-4">
+
+                        <a class="block" id="late-block" href="#">
+                            <h2>นิสิตที่มาสายเยอะที่สุด</h2>
+                            <ol id="late-student-list"></ol>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-4">
+
+                        <div class="block">
+                            <h2>วิชาที่มีการขาดเรียนเยอะที่สุด</h2>
+                            <% if (mostAbsentCourse) { %>
+                                <p>
+
+                                    รหัสวิชา : <%= mostAbsentCourse.course_code %>[<%= mostAbsentCourse.section %>]<br>
+                                            ชื่อวิชา : <%= mostAbsentCourse.course_name %><br>
+                                                จำนวนที่ขาดทั้งหมด : <%= mostAbsentCourse.absent_count %> ครั้ง
+                                </p>
+                                <% } else { %>
+                                    <p>ไม่มีข้อมูลวิชาที่ขาดเรียนมากที่สุด</p>
+                                    <% } %>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+
+                        <div class="block">
+                            <h2>วิชาที่มีการสายเยอะที่สุด</h2>
+                            <% if (mostLateCourse) { %>
+                                <p>
+
+                                    รหัสวิชา : <%= mostLateCourse.course_code %>[<%= mostLateCourse.section %>]<br>
+                                            ชื่อวิชา : <%= mostLateCourse.course_name %><br>
+                                                จำนวนที่สายทั้งหมด : <%= mostLateCourse.late_count %> ครั้ง
+                                </p>
+                                <% } else { %>
+                                    <p>ไม่มีข้อมูลวิชาที่มาสายมากที่สุด</p>
+                                    <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="courseCode">ระบุรายวิชา</label>
+                    <select id="courseCode" name="courseCode" class="form-select" required>
+                        <option value="">-- เลือกรายวิชา --</option>
+                        <% subjects.forEach(function(course) { %>
+                            <option value="<%= course.course_code %>_<%= course.section %>">
+                                รหัสวิชา : <%= course.course_code %>[<%= course.section %>] รายวิชา : <%=
+                                            course.course_name %>
+                            </option>
+                            <% }); %>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="dateSelect">เลือกวันที่</label>
+                    <select id="dateSelect" name="dateSelect" class="form-select" required>
+                        <option value="">-- กรุณาเลือกรายวิชาก่อน --</option>
+                    </select>
+                </div>
+
+                <div class="chart-container-wrapper">
+                    <div class="chart-title-wrapper">
+                        <h1 id="overallChartTitle">แผนภูมิวงกลมแสดงสถานะการเข้าชั้นเรียนโดยรวม</h1>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="overallPieChart" width="300" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-title-wrapper" style="display: none; text-align: center; margin-top: 20px;">
+                        <h1 id="pieChartTitle">แผนภูมิวงกลมแสดงสถานะการเข้าชั้นเรียน</h1>
+                    </div>
+
+
+                    <div class="chart-container">
+                        <canvas id="pieChart" width="300" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-title-wrapper" style="display: none; text-align: center; margin-top: 20px;">
+                        <h1 id="barChartTitle">แผนภูมิแท่งแสดงจำนวนการเช็คชื่อในช่วงเวลา</h1>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="barChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // โค้ด JavaScript สำหรับการอัปเดตกราฟและการแสดงผลต่างๆ
+
+        // ดึง context ของ canvas
+        var ctxOverall = document.getElementById('overallPieChart').getContext('2d');
+        var ctxPie = document.getElementById('pieChart').getContext('2d');
+
+        // ลงทะเบียน Plugin ChartDataLabels
+        Chart.register(ChartDataLabels);
+        var options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 20,
+
+                    }
+                },
+                datalabels: {
+                    formatter: (value, context) => {
+                        if (value === 0) {
+                            return ''; // ซ่อน label ถ้าค่าเป็นศูนย์
+                        }
+                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return `${value} (${percentage}%)`; // แสดงทั้งจำนวนและเปอร์เซ็นต์
+                    },
+                    color: '#333',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+
+                }
+            },
+        };
+
+
+
+
+        // ใช้ options ในการสร้างกราฟ
+        var overallPieChart = new Chart(ctxOverall, {
+            type: 'pie',
+            data: {
+                labels: ['เข้าชั้นเรียน', 'สาย', 'ขาด', 'ลา'],
+                datasets: [{
+                    data: [7, 5, 8, 1],
+                    backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 206, 86, 1)', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: options
+        });
+
+        var ctxBar = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'จำนวนคนที่เช็คชื่อ', data: [], backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 }] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'ช่วงเวลา' } },
+                    y: { title: { display: true, text: 'จำนวนคนที่เช็คชื่อ' }, beginAtZero: true, ticks: { stepSize: 1 } }
+                },
+            }
+        });
+
+        var pieChart = new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: ['เข้าชั้นเรียน', 'สาย', 'ขาด', 'ลา'],
+                datasets: [{
+                    data: [0, 2, 1, 0],
+                    backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 206, 86, 1)', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: options
+        });
+
+        function hideCharts() {
+            document.querySelectorAll('.chart-container').forEach(container => container.style.display = 'none');
+            document.querySelectorAll('.chart-title-wrapper').forEach(wrapper => wrapper.style.display = 'none');
+        }
+
+        function showCharts() {
+            document.querySelectorAll('.chart-container').forEach(container => container.style.display = 'block');
+            document.querySelectorAll('.chart-title-wrapper').forEach(wrapper => wrapper.style.display = 'block');
+        }
+
+        hideCharts();
+
+        document.getElementById('courseCode').addEventListener('change', async function () {
+            const courseCode = this.value;
+            const dateSelect = document.getElementById('dateSelect');
+            if (!courseCode) {
+                dateSelect.innerHTML = '<option value="">-- กรุณาเลือกรายวิชาก่อน --</option>';
+                hideCharts();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/getDatesForCourse?course=${courseCode}`);
+                const dates = await response.json();
+                if (dates.error) {
+                    console.error('Error fetching dates:', dates.error);
+                    hideCharts();
+                    return;
+                }
+
+                dateSelect.innerHTML = dates.map(date => `<option value="${date.date}">${new Date(date.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })}</option>`).join('');
+                hideCharts();
+                if (dates.length > 0) {
+                    dateSelect.value = dates[0].date;
+                    await updateCharts(); // อัปเดตกราฟรายวัน
+                    await updateBarChart(); // อัปเดตกราฟแท่ง
+                }
+                await updateOverallChart(courseCode); // อัปเดต Overall Chart
+                showCharts(); // แสดงกราฟทั้งหมด
+            } catch (error) {
+                console.error('Error fetching dates:', error);
+                hideCharts();
+            }
+        });
+
+
+        document.getElementById('courseCode').addEventListener('change', async function () {
+            const courseCode = this.value;
+            const dateSelect = document.getElementById('dateSelect');
+            if (!courseCode) {
+                dateSelect.innerHTML = '<option value="">-- กรุณาเลือกรายวิชาก่อน --</option>';
+                hideCharts();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/getDatesForCourse?course=${courseCode}`);
+                const dates = await response.json();
+                if (dates.error) {
+                    console.error('Error fetching dates:', dates.error);
+                    hideCharts();
+                    return;
+                }
+
+                dateSelect.innerHTML = dates.map(date => `<option value="${date.date}">${new Date(date.date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })}</option>`).join('');
+                hideCharts();
+
+                if (dates.length > 0) {
+                    dateSelect.value = dates[0].date; // เลือกวันแรก
+                    updateChartTitleWithDate(); // อัปเดตชื่อกราฟให้แสดงวันที่แรกที่เลือก
+                    await updateCharts(); // อัปเดตกราฟรายวัน
+                    await updateBarChart(); // อัปเดตกราฟแท่ง
+                }
+                await updateOverallChart(courseCode); // อัปเดต Overall Chart
+                showCharts(); // แสดงกราฟทั้งหมด
+            } catch (error) {
+                console.error('Error fetching dates:', error);
+                hideCharts();
+            }
+        });
+
+        document.getElementById('dateSelect').addEventListener('change', async function () {
+            const courseCode = document.getElementById('courseCode').value;
+            const date = this.value;
+            if (!courseCode || !date) {
+                console.log('กรุณาเลือกรายวิชาและวันที่');
+                hideCharts();
+                return;
+            }
+        
+            updateChartTitleWithDate(); // อัปเดตชื่อกราฟให้แสดงวันที่ใหม่
+        
+            // อัปเดตกราฟเมื่อเลือกวันที่ใหม่
+            await updateCharts();
+            await updateBarChart();
+            showCharts(); // แสดงกราฟ
+        });
+        
+
+        // ฟังก์ชันสำหรับอัปเดตชื่อกราฟตามวันที่ที่เลือก
+        function updateChartTitleWithDate() {
+            const dateSelect = document.getElementById('dateSelect');
+            const selectedDate = dateSelect.options[dateSelect.selectedIndex].text; // ดึงข้อความที่แสดงใน option ที่เลือก
+            const pieChartTitle = document.getElementById('pieChartTitle');
+            const barChartTitle = document.getElementById('barChartTitle');
+            pieChartTitle.textContent = `แผนภูมิวงกลมแสดงสถานะการเข้าชั้นเรียนของวันที่ ${selectedDate}`;
+            barChartTitle.textContent = `แผนภูมิแท่งแสดงจำนวนการเช็คชื่อในช่วงเวลาของวันที่ ${selectedDate}`;
+        }
+
+
+
+        async function updateOverallChart(courseCode) {
+            try {
+                const response = await fetch(`/getAttendanceDataForAllDates?course=${courseCode}`);
+                const data = await response.json();
+                overallPieChart.data.datasets[0].data = [data.presentCount, data.lateCount, data.absentCount, data.leaveCount];
+                overallPieChart.update();
+                showCharts();
+            } catch (error) {
+                console.error('Error updating overall chart:', error);
+            }
+        }
+
+        async function updateCharts() {
+            const courseCode = document.getElementById('courseCode').value;
+            const date = document.getElementById('dateSelect').value;
+            if (!courseCode || !date) {
+                console.log('กรุณาเลือกรายวิชาและวันที่');
+                hideCharts();
+                return;
+            }
+        
+            const selectedDate = new Date(date).toLocaleDateString('en-CA');
+            try {
+                const response = await fetch(`/getAttendanceData?course=${courseCode}&date=${selectedDate}`);
+                const data = await response.json();
+                if (data.error) {
+                    console.error('Error fetching data:', data.error);
+                    hideCharts();
+                    return;
+                }
+        
+                pieChart.data.datasets[0].data = [data.presentCount, data.lateCount, data.absentCount, data.leaveCount];
+                pieChart.update();
+            } catch (error) {
+                console.error('Error fetching data for charts:', error);
+                hideCharts();
+            }
+        }
+        
+        async function updateBarChart() {
+            const courseCode = document.getElementById('courseCode').value;
+            const date = document.getElementById('dateSelect').value;
+            if (!courseCode || !date) {
+                console.log('กรุณาเลือกรายวิชาและวันที่');
+                hideCharts();
+                return;
+            }
+        
+            const selectedDate = new Date(date).toLocaleDateString('en-CA');
+            try {
+                const response = await fetch(`/getAttendanceByTime?course=${courseCode}&date=${selectedDate}`);
+                const data = await response.json();
+                if (data.error) {
+                    console.error('Error fetching data:', data.error);
+                    hideCharts();
+                    return;
+                }
+        
+                // กรองข้อมูลที่ time_range ไม่ใช่ null
+                const filteredData = data.filter(record => record.time_range !== null);
+        
+                const labels = filteredData.map(record => record.time_range);
+                const counts = filteredData.map(record => record.count);
+                barChart.data.labels = labels;
+                barChart.data.datasets[0].data = counts;
+                barChart.update();
+            } catch (error) {
+                console.error('Error fetching data for bar chart:', error);
+                hideCharts();
+            }
+        }
+        
+
+        async function updateBarChart() {
+            const courseCode = document.getElementById('courseCode').value;
+            const date = document.getElementById('dateSelect').value;
+            if (!courseCode || !date) {
+                console.log('กรุณาเลือกรายวิชาและวันที่');
+                hideCharts();
+                return;
+            }
+        
+            const selectedDate = new Date(date).toLocaleDateString('en-CA');
+            try {
+                const response = await fetch(`/getAttendanceByTime?course=${courseCode}&date=${selectedDate}`);
+                const data = await response.json();
+                if (data.error) {
+                    console.error('Error fetching data:', data.error);
+                    hideCharts();
+                    return;
+                }
+        
+                // กรองข้อมูลที่ time_range ไม่ใช่ null
+                const filteredData = data.filter(record => record.time_range !== null);
+        
+                const labels = filteredData.map(record => record.time_range);
+                const counts = filteredData.map(record => record.count);
+                barChart.data.labels = labels;
+                barChart.data.datasets[0].data = counts;
+                barChart.update();
+            } catch (error) {
+                console.error('Error fetching data for bar chart:', error);
+                hideCharts();
+            }
+        }
+    </script>
+
+    <script>
+        // ข้อมูลนิสิตที่ขาดเรียนมากที่สุดที่ถูกส่งจากเซิร์ฟเวอร์
+        let absentStudents;
+        let lateStudents;
+
+        try {
+            absentStudents = JSON.parse('<%- JSON.stringify(absentStudents || []) %>');
+        } catch (error) {
+            console.error('Error parsing absentStudents:', error);
+            absentStudents = [];
+        }
+
+        try {
+            lateStudents = JSON.parse('<%- JSON.stringify(lateStudents || []) %>');
+        } catch (error) {
+            console.error('Error parsing lateStudents:', error);
+            lateStudents = [];
+        }
+
+        // ตั้งตัวแปร index เพื่อใช้ในการวนลูปเปลี่ยนข้อมูล
+        let currentAbsentIndex = 0;
+        let currentLateIndex = 0;
+
+        // ฟังก์ชันสำหรับอัปเดตข้อมูลนิสิตขาดเรียนในบล็อก
+        function updateAbsentBlock() {
+            if (!Array.isArray(absentStudents) || absentStudents.length === 0) {
+                document.getElementById('absent-block').innerHTML = `<h2>ไม่มีข้อมูลนิสิตที่ขาดเรียน</h2>`;
+                return;
+            }
+
+            const student = absentStudents[currentAbsentIndex];
+            document.getElementById('absent-block').innerHTML = `
+        <h2>นิสิตที่ขาดเรียนเยอะที่สุด</h2>
+        <ol id="student-list">
+            <li>
+                รหัสวิชา: ${student.course_code}[${student.section}]<br>
+                ชื่อ: ${student.first_name} ${student.last_name}<br>
+                จำนวนที่ขาด: ${student.absent_count} ครั้ง
+            </li>
+        </ol>
+    
+    `;
+            // เปลี่ยน index เพื่อแสดงนิสิตคนถัดไป
+            currentAbsentIndex = (currentAbsentIndex + 1) % absentStudents.length;
+        }
+
+        // ฟังก์ชันสำหรับอัปเดตข้อมูลนิสิตมาสายในบล็อก
+        function updateLateBlock() {
+            if (!Array.isArray(lateStudents) || lateStudents.length === 0) {
+                document.getElementById('late-block').innerHTML = `<h2>ไม่มีข้อมูลนิสิตที่มาสาย</h2>`;
+                return;
+            }
+
+            const student = lateStudents[currentLateIndex];
+            document.getElementById('late-block').innerHTML = `
+        <h2>นิสิตที่มาสายเยอะที่สุด</h2>
+        <ol id="late-student-list">
+            <li>
+                รหัสวิชา: ${student.course_code}[${student.section}]<br>
+                ชื่อ: ${student.first_name} ${student.last_name}<br>
+                จำนวนที่มาสาย: ${student.late_count} ครั้ง
+            </li>
+        </ol>
+        
+    `;
+            // เปลี่ยน index เพื่อแสดงนิสิตคนถัดไป
+            currentLateIndex = (currentLateIndex + 1) % lateStudents.length;
+        }
+
+        // เรียกใช้ฟังก์ชันทุกๆ 3 วินาทีเพื่อเปลี่ยนข้อมูล
+        setInterval(updateAbsentBlock, 3000);
+        setInterval(updateLateBlock, 3000);
+
+        // เรียกใช้ฟังก์ชันทันทีเมื่อโหลดหน้า
+        updateAbsentBlock();
+        updateLateBlock();
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="Sidebar.js"></script>
+</body>
+
+</html>
