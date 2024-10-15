@@ -1,192 +1,26 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:ClassTracking/api_constants.dart';
+import 'package:ClassTracking/Student/Sbox/SBox3/Record.dart';
+import 'package:ClassTracking/Student/Sbox/SBox3/SBox3.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class Record extends StatefulWidget {
+class Choose extends StatelessWidget {
   final String studentId;
 
-  const Record({Key? key, required this.studentId}) : super(key: key);
+  const Choose({Key? key, required this.studentId}) : super(key: key);
 
-  @override
-  _RecordState createState() => _RecordState();
-}
-
-class _RecordState extends State<Record> {
-  List<Map<String, dynamic>> leaveHistory = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchLeaveHistory();
-  }
-
-  Future<void> fetchLeaveHistory() async {
-    setState(() {
-      isLoading = true;
-    });
-
+  Future<void> _launchURL() async {
+    final Uri url = Uri.parse(
+        'https://drive.google.com/file/d/1iXq7ZzDi50ROZ2JzUKcHgxle_iISChw4/view?usp=sharing');
     try {
-      final response = await http.get(
-        Uri.parse(
-            '${APIConstants.baseURL}/api/leave-history/${widget.studentId}'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        setState(() {
-          leaveHistory = List<Map<String, dynamic>>.from(data);
-          isLoading = false;
-        });
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
-        throw Exception('Failed to load leave history');
+        throw 'Could not launch $url';
       }
     } catch (e) {
-      print('Error fetching leave history: $e');
-      setState(() {
-        isLoading = false;
-      });
+      print('Error launching URL: $e');
+      // ทำการจัดการข้อผิดพลาดที่นี่ เช่น แสดง SnackBar หรือ AlertDialog
     }
-  }
-
-  String getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'อนุมัติ':
-        return '#4CAF50';
-      case 'ไม่อนุมัติ':
-        return '#F44336';
-      case 'รออนุมัติ':
-        return '#FFC107';
-      default:
-        return '#9E9E9E';
-    }
-  }
-
-  String formatDate(String? dateString) {
-    if (dateString == null) return 'รอการตอบกลับ..';
-    try {
-      final date = DateTime.parse(dateString).toLocal();
-      return DateFormat('dd/MM/yyyy').format(date);
-    } catch (e) {
-      return dateString;
-    }
-  }
-
-  void showLeaveDetails(Map<String, dynamic> leave) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('รายละเอียดใบลา'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                    'วิชา: ${leave['course_name']} (${leave['course_code']})[${leave['section'] ?? 'N/A'}]'),
-                Text('ประเภท: ${leave['leave_type']}'),
-                Text(
-                    'วันที่: ${formatDate(leave['start_date'])} - ${formatDate(leave['end_date'])}'),
-                Text('เหตุผล: ${leave['reason']}'),
-                Text(
-                    'วันที่: ${formatDate(leave['start_date'])} - ${formatDate(leave['end_date'])}'),
-                Text('สถานะ: ${leave['action'] ?? 'รออนุมัติ'}'),
-                Text('ความคิดเห็น: ${leave['comment'] ?? 'ไม่มีความคิดเห็น'}'),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  child: Text('ดูเอกสารใบลา'),
-                  onPressed: () =>
-                      _viewDocument(leave['id'].toString(), 'leave'),
-                ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  child: Text('ดูใบรับรองแพทย์'),
-                  onPressed: () =>
-                      _viewDocument(leave['id'].toString(), 'medical'),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('ปิด'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _viewDocument(String leaveRequestId, String documentType) async {
-    try {
-      final url = Uri.parse(
-          '${APIConstants.baseURL}/download/$documentType/$leaveRequestId');
-      print('Downloading document from: $url');
-
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final bytes = response.bodyBytes;
-        if (bytes.isEmpty) {
-          throw Exception('ไม่พบไฟล์เอกสาร');
-        }
-        final tempDir = await getTemporaryDirectory();
-        final file =
-            File('${tempDir.path}/${documentType}_$leaveRequestId.pdf');
-        await file.writeAsBytes(bytes);
-
-        final result = await OpenFile.open(file.path);
-        if (result.type != ResultType.done) {
-          throw Exception('ไม่สามารถเปิดไฟล์ได้');
-        }
-      } else if (response.statusCode == 404) {
-        _showNoFileDialog(documentType);
-      } else {
-        throw Exception('เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์');
-      }
-    } catch (e) {
-      print('Error viewing document: $e');
-      if (e.toString().contains('ไม่พบไฟล์เอกสาร')) {
-        _showNoFileDialog(documentType);
-      } else {
-        _showErrorSnackBar(e.toString());
-      }
-    }
-  }
-
-  void _showNoFileDialog(String documentType) {
-    String documentName = documentType == 'leave' ? 'ใบลา' : 'ใบรับรองแพทย์';
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('ไม่พบไฟล์'),
-          content: Text('ไม่พบไฟล์$documentName'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('ตกลง'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
   }
 
   @override
@@ -194,7 +28,7 @@ class _RecordState extends State<Record> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
+          // ภาพพื้นหลัง
           Positioned(
             top: -10,
             left: 0,
@@ -207,9 +41,9 @@ class _RecordState extends State<Record> {
               ),
             ),
           ),
-          // Back button
+          // ปุ่มย้อนกลับ
           Positioned(
-            top: 40,
+            top: 55,
             left: 20,
             child: IconButton(
               icon: Image.asset(
@@ -220,7 +54,7 @@ class _RecordState extends State<Record> {
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          // Right icon
+          // ไอคอนด้านขวา
           Positioned(
             top: 80,
             right: 20,
@@ -230,16 +64,16 @@ class _RecordState extends State<Record> {
               height: 50,
             ),
           ),
-          // Title
+          // ข้อความกลางหน้าจอ
           Positioned(
-            top: 80,
+            top: 90,
             left: 0,
             right: 0,
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 10.0),
                 child: Text(
-                  'ประวัติการลา',
+                  'ระบบลาออนไลน์',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -248,73 +82,136 @@ class _RecordState extends State<Record> {
               ),
             ),
           ),
-          // Leave history list
+          // ข้อความ "เลือกรูปแบบการเข้าใช้งาน"
           Positioned(
-            top: 150,
+            top: 160,
             left: 0,
             right: 0,
-            bottom: 0,
-            child: isLoading
-                ? Center(child: CircularProgressIndicator())
-                : leaveHistory.isEmpty
-                    ? Center(child: Text('ไม่พบประวัติการลา'))
-                    : ListView.builder(
-                        itemCount: leaveHistory.length,
-                        itemBuilder: (context, index) {
-                          final leave = leaveHistory[index];
-                          return Card(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: InkWell(
-                              onTap: () => showLeaveDetails(leave),
-                              child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${leave['course_name'] ?? 'N/A'} ${leave['course_code'] ?? 'N/A'}[${leave['section'] ?? 'N/A'}]',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                        'ประเภท: ${leave['leave_type'] ?? 'N/A'}'),
-                                    Text(
-                                        'วันที่: ${formatDate(leave['start_date'])} - ${formatDate(leave['end_date'])}'),
-                                    Text('เหตุผล: ${leave['reason'] ?? 'N/A'}'),
-                                    Text(
-                                        'วันที่ดำเนินการ: ${formatDate(leave['approval_date'] ?? leave['action_date'])}'),
-                                    if (leave['comment'] != null)
-                                      Text('ความคิดเห็น: ${leave['comment']}'),
-                                    SizedBox(height: 8),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Color(int.parse(getStatusColor(
-                                                  leave['action'] ??
-                                                      'รออนุมัติ')
-                                              .replaceAll('#', '0xFF'))),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          leave['action'] ?? 'รออนุมัติ',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+            child: Center(
+              child: Text(
+                'เลือกรูปแบบการเข้าใช้งาน',
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+          // กล่องที่มีภาพและข้อความด้านล่าง
+          Positioned(
+            top: 220,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        // กล่องซ้าย (ประวัติการลา)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Record(studentId: studentId),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 140,
+                            height: 140,
+                            decoration: BoxDecoration(
+                              color: Colors.blueAccent,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.asset(
+                                'assets/Images/c1.png',
+                                fit: BoxFit.contain,
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'ประวัติการลา',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        // กล่องขวา (ส่งใบลา)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SBox3(studentId: studentId),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 140,
+                            height: 140,
+                            decoration: BoxDecoration(
+                              color: Colors.pinkAccent,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.asset(
+                                'assets/Images/c2.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'ส่งใบลา',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 40),
+                // กล่องใหม่ (ดาวโหลดใบลา)
+                GestureDetector(
+                  onTap: _launchURL,
+                  child: Container(
+                    width: 340,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(211, 132, 230, 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'กดที่นี้เพื่อดาวน์โหลดใบลา',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
                       ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
