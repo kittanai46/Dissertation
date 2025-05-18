@@ -72,7 +72,7 @@ class _RecordState extends State<Record> {
   String formatDate(String? dateString) {
     if (dateString == null) return 'รอการตอบกลับ..';
     try {
-      final date = DateTime.parse(dateString);
+      final date = DateTime.parse(dateString).toLocal();
       return DateFormat('dd/MM/yyyy').format(date);
     } catch (e) {
       return dateString;
@@ -89,15 +89,15 @@ class _RecordState extends State<Record> {
             child: ListBody(
               children: <Widget>[
                 Text(
-                    'วิชา: ${leave['course_name']} ${leave['course_code']}[${leave['section'] ?? 'ไม่มีข้อมูล'}]'),
+                    'วิชา: ${leave['course_name']} (${leave['course_code']})[${leave['section'] ?? 'N/A'}]'),
                 Text('ประเภท: ${leave['leave_type']}'),
                 Text(
-                    'ตั้งแต่วันที่: ${formatDate(leave['start_date'])} ถึงวันที่ ${formatDate(leave['end_date'])}'),
+                    'วันที่: ${formatDate(leave['start_date'])} - ${formatDate(leave['end_date'])}'),
                 Text('เหตุผล: ${leave['reason']}'),
                 Text(
-                    'วันที่ดำเนินการ: ${formatDate(leave['approval_date'] ?? leave['action_date'])}'),
+                    'วันที่: ${formatDate(leave['start_date'])} - ${formatDate(leave['end_date'])}'),
                 Text('สถานะ: ${leave['action'] ?? 'รออนุมัติ'}'),
-                Text('ความคิดเห็น: ${leave['comment'] ?? 'ไม่มี'}'),
+                Text('ความคิดเห็น: ${leave['comment'] ?? 'ไม่มีความคิดเห็น'}'),
                 SizedBox(height: 20),
                 ElevatedButton(
                   child: Text('ดูเอกสารใบลา'),
@@ -209,7 +209,7 @@ class _RecordState extends State<Record> {
           ),
           // Back button
           Positioned(
-            top: 55,
+            top: 40,
             left: 20,
             child: IconButton(
               icon: Image.asset(
@@ -280,16 +280,14 @@ class _RecordState extends State<Record> {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                        'ประเภท: ${leave['leave_type'] ?? 'ไม่มีข้อมูล'}'),
+                                        'ประเภท: ${leave['leave_type'] ?? 'N/A'}'),
                                     Text(
-                                        'ตั้งแต่วันที่: ${formatDate(leave['start_date'])}  ถึงวันที่  ${formatDate(leave['end_date'])}'),
-                                    Text(
-                                        'เหตุผล: ${leave['reason'] ?? 'ไม่มีข้อมูล'}'),
+                                        'วันที่: ${formatDate(leave['start_date'])} - ${formatDate(leave['end_date'])}'),
+                                    Text('เหตุผล: ${leave['reason'] ?? 'N/A'}'),
                                     Text(
                                         'วันที่ดำเนินการ: ${formatDate(leave['approval_date'] ?? leave['action_date'])}'),
                                     if (leave['comment'] != null)
-                                      Text(
-                                          'ความคิดเห็น: ${leave['comment'] ?? 'ไม่มี'}'),
+                                      Text('ความคิดเห็น: ${leave['comment']}'),
                                     SizedBox(height: 8),
                                     Align(
                                       alignment: Alignment.bottomRight,

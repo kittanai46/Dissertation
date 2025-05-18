@@ -114,6 +114,11 @@ class _PBox3State extends State<PBox3> {
     }
   }
 
+  String _formatDate(String dateString) {
+    final date = DateTime.parse(dateString).toLocal();
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
+
   void _showLeaveDetails(Map<String, dynamic> leaveRequest) {
     showDialog(
       context: context,
@@ -126,13 +131,10 @@ class _PBox3State extends State<PBox3> {
                 Text('นิสิต: ${leaveRequest['student_name']}'),
                 Text('รหัสนิสิต: ${leaveRequest['student_id']}'),
                 Text('วิชา: ${leaveRequest['course_name']}'),
-                // Text('รหัสวิชา: ${leaveRequest['course_code']}'),
-                // Text('Section: ${leaveRequest['section']}'),
                 Text('ประเภทการลา: ${leaveRequest['leave_type']}'),
                 Text(
-                    'วันที่เริ่มลา: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(leaveRequest['start_date']))}'),
-                Text(
-                    'วันที่สิ้นสุด: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(leaveRequest['end_date']))}'),
+                    'วันที่เริ่มลา: ${_formatDate(leaveRequest['start_date'])}'),
+                Text('วันที่สิ้นสุด: ${_formatDate(leaveRequest['end_date'])}'),
                 Text('เหตุผล: ${leaveRequest['reason']}'),
                 SizedBox(height: 15),
                 ElevatedButton(
@@ -218,7 +220,7 @@ class _PBox3State extends State<PBox3> {
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.black),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
@@ -248,7 +250,7 @@ class _PBox3State extends State<PBox3> {
           ),
           // Back button
           Positioned(
-            top: 55,
+            top: 40,
             left: 20,
             child: IconButton(
               icon: Image.asset(
@@ -262,7 +264,7 @@ class _PBox3State extends State<PBox3> {
           // Right icon
           Positioned(
             top: 80,
-            right: 70,
+            right: 20,
             child: Image.asset(
               'assets/Images/icon03.png',
               width: 50,
@@ -271,7 +273,7 @@ class _PBox3State extends State<PBox3> {
           ),
           // Screen title
           Positioned(
-            top: 100,
+            top: 80,
             left: 0,
             right: 0,
             child: Center(
@@ -311,7 +313,7 @@ class _PBox3State extends State<PBox3> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      'วันที่ลา: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(leaveRequest['start_date']))}'),
+                                      'วันที่ลา: ${_formatDate(leaveRequest['start_date'])}'),
                                   Text(
                                       'ประเภทการลา: ${leaveRequest['leave_type']}'),
                                 ],
