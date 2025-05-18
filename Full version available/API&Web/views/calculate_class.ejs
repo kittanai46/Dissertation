@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Tracking: คำนวณคะแนน</title>
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/Main.css">
+    <link rel="icon" href="/image/favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        .status-present {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+
+        .status-late {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+        }
+
+        .status-leave {
+            background-color: #d1ecf1 !important;
+            color: #0c5460 !important;
+        }
+
+        .status-absent {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        .button-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .button-section {
+            display: flex;
+            justify-content: space-between;
+            /* จัดให้ปุ่มทั้งสองอยู่ข้างซ้ายและขวา */
+            align-items: flex-start;
+            /* ทำให้ตำแหน่งของปุ่มและข้อความเริ่มต้นอยู่ในระดับเดียวกัน */
+            margin-bottom: 20px;
+            /* เพิ่มระยะห่างด้านล่างเล็กน้อย */
+        }
+
+        .button-section form {
+            display: flex;
+            flex-direction: column;
+            /* จัดเรียงปุ่มและฟิลด์แบบ column */
+            align-items: flex-start;
+            /* จัดให้องค์ประกอบอยู่ทางซ้าย */
+        }
+
+        .button-section form p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .button-section form input {
+            margin-top: 5px;
+        }
+
+        .button-section form button {
+            margin-top: 10px;
+        }
+
+        /* ปุ่มสีม่วงตามธีม */
+        .btn-purple {
+            background-color: #6f42c1 !important;
+            /* สีม่วง */
+            border-color: #6f42c1 !important;
+            /* สีขอบของปุ่ม */
+            color: white !important;
+            /* สีของตัวอักษรในปุ่ม */
+        }
+
+        .btn-purple:hover {
+            background-color: #5a379b !important;
+            /* สีเมื่อเอาเมาส์ชี้บนปุ่ม */
+            border-color: #5a379b !important;
+        }
+
+        /* จัดกึ่งกลางเนื้อหาหัวตารางและตาราง */
+        table th,
+        table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* จัดกึ่งกลางสำหรับสถานะการเข้าเรียน */
+        .status-present,
+        .status-late,
+        .status-leave,
+        .status-absent {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <aside id="sidebar">
+            <div class="d-flex">
+                <button class="toggle-btn" type="button">
+                    <i class="lni lni-grid-alt"></i>
+                </button>
+                <div class="sidebar-logo">
+                    <a href="/">TRACKING</a>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="/classroom" class="sidebar-link">
+                        <i class="lni lni-network"></i>
+                        <span>ห้องเรียน</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/calculate" class="sidebar-link">
+                        <i class="lni lni-calculator"></i>
+                        <span>คำนวณคะแนน</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/graph" class="sidebar-link">
+                        <i class="lni lni-graph"></i>
+                        <span>ภาพรวมข้อมูล</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+                        <i class="lni lni-folder"></i>
+                        <span>เอกสารการลา</span>
+                    </a>
+                    <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="/leave-requests/<%= teacherId %>" class="sidebar-link">การลาที่รออนุมัติ</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/leave-history/<%= teacherId %>" class="sidebar-link">ประวัติการลา</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/notification" class="sidebar-link">
+                        <i class="lni lni-popup"></i>
+                        <span>การแจ้งเตือน</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-link">
+                    <i class="lni lni-exit"></i>
+                    <span>ออกจากระบบ</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Start main content -->
+        <div class="main p-3">
+            <h1 class="text-center">คะแนนนิสิต รายวิชา <%= courseName %> รหัสวิชา: <%= courseCode %>[<%= section %>]
+            </h1>
+            <!-- Row for buttons with flexbox to align left and right -->
+            <div class="button-section mt-4">
+                <form id="latePenaltyForm" method="POST" action="/updateLateLimit/<%= courseCode %>/<%= section %>">
+                    <% if (lateLimit===null || lateLimit===0) { %>
+                        <p>ยังไม่มีการตั้งเงื่อนไขการเข้าสาย</p>
+                        <input type="number" id="lateLimit" name="lateLimit" min="0">
+                        <button type="submit" class="btn btn-primary">บันทึกเงื่อนไข</button>
+                        <% } else { %>
+                            <p>เงื่อนไขการเข้าสายปัจจุบันในระบบคือ: <%= lateLimit %> ครั้งที่สาย</p>
+                            <button type="button" class="btn btn-purple" id="editLimitBtn">แก้ไขเงื่อนไข</button>
+                            <input type="number" id="lateLimit" name="lateLimit" value="<%= lateLimit %>" min="0"
+                                style="display:none;">
+                            <button type="submit" class="btn btn-primary" id="saveLimitBtn"
+                                style="display:none;">บันทึกเงื่อนไข</button>
+                            <% } %>
+                </form>
+
+                <form id="maxScoreForm" method="POST" action="/updateMaxScore/<%= courseCode %>/<%= section %>">
+                    <% if (maxScore===null || maxScore===0) { %>
+                        <p>ยังไม่มีการตั้งการคำนวณคะแนน</p>
+                        <input type="number" id="maxScore" name="maxScore" min="0">
+                        <button type="submit" class="btn btn-success mt-2">บันทึกการคำนวณคะแนน</button>
+                        <% } else { %>
+                            <p>คะแนนที่ตั้งไว้ในระบบคือ: <%= maxScore %> คะแนน</p>
+                            <button type="button" class="btn btn-purple" id="editScoreBtn">แก้ไขการคำนวณคะแนน</button>
+                            <input type="number" id="maxScore" name="maxScore"
+                                value="<%= maxScore !== null ? maxScore : '' %>" min="0" style="display:none;">
+                            <button type="submit" class="btn btn-primary" id="saveScoreBtn"
+                                style="display:none;">บันทึกการคำนวณคะแนน</button>
+                            <% } %>
+                </form>
+            </div>
+
+
+            <!-- ตารางคะแนน -->
+            <table class="table table-bordered mt-4">
+                <thead>
+                    <tr>
+                        <th>รหัสนิสิต</th>
+                        <th>ชื่อ - นามสกุล</th>
+                        <% dates.forEach(function(date) { %>
+                            <th>
+                                <%= date.formatted_date %>
+                            </th>
+                            <% }); %>
+                                <th>การขาด</th> <!-- คอลัมน์สำหรับคะแนนที่จะถูกลบ -->
+                                <th>การเข้าเรียน</th> <!-- คะแนนรวม -->
+                                <th>คะแนน</th> <!-- คอลัมน์สำหรับแสดงคะแนนที่ใช้งานจริง -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <% students.forEach(function(student) { %>
+                        <tr>
+                            <td>
+                                <%= student.id_number %>
+                            </td>
+                            <td>
+                                <%= student.first_name %>
+                                    <%= student.last_name %>
+                            </td>
+                            <% student.attendanceByDate.forEach(function(attendance) { %>
+                                <td class="status-<%= attendance.status %>">
+                                    <% if (attendance.status==='present' ) { %>
+                                        เข้าเรียน
+                                        <% } else if (attendance.status==='late' ) { %>
+                                            สาย
+                                            <% } else if (attendance.status==='leave' ) { %>
+                                                ลา
+                                                <% } else if (attendance.status==='absent' ) { %>
+                                                    ขาด
+                                                    <% } %>
+                                </td>
+                                <% }); %>
+                                    <!-- แสดงคะแนนที่จะถูกลบ หรือแสดง - ถ้าไม่มีการหักคะแนน -->
+                                    <td>
+                                        <%= lateLimit==0 ? '-' : (student.penaltyScore> 0 ? student.penaltyScore : '-')
+                                            %>
+                                    </td>
+                                    <td>
+                                        <%= student.totalScore %>
+                                    </td> <!-- คะแนนรวม -->
+                                    <td>
+                                        <%= student.actualScore.toFixed(2) %>
+                                    </td> <!-- แสดงคะแนนที่ใช้งานจริงในรูปแบบทศนิยม 2 ตำแหน่ง -->
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+            <div class="button-section mt-4">
+                <!-- ปุ่มสำหรับ Export -->
+                <button id="exportExcelWithTime" class="btn btn-purple">Export คะแนนการเข้าเรียน</button>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="/Sidebar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script>
+        // ฟังก์ชันทำให้ฟิลด์ lateLimit สามารถแก้ไขได้
+        document.getElementById('editLimitBtn').addEventListener('click', function () {
+            document.getElementById('lateLimit').style.display = 'inline-block';
+            document.getElementById('saveLimitBtn').style.display = 'inline-block';
+            document.getElementById('editLimitBtn').style.display = 'none';
+        });
+
+        // ฟังก์ชันทำให้ฟิลด์ maxScore สามารถแก้ไขได้
+        document.getElementById('editScoreBtn').addEventListener('click', function () {
+            document.getElementById('maxScore').style.display = 'inline-block';
+            document.getElementById('saveScoreBtn').style.display = 'inline-block';
+            document.getElementById('editScoreBtn').style.display = 'none';
+        });
+
+
+        document.getElementById('exportExcelWithTime').addEventListener('click', function () {
+            // ตรวจสอบว่ามีข้อมูลในตาราง
+            var table = document.querySelector('table');
+            if (!table) {
+                alert('ไม่มีข้อมูลให้ Export');
+                return;
+            }
+        
+            // สร้าง array เพื่อเก็บข้อมูลสำหรับ Excel
+            var data = [];
+            
+            // ดึงข้อมูลหัวตาราง
+            var headers = Array.from(table.querySelectorAll('thead th')).map(header => header.innerText.trim());
+            data.push(headers);
+        
+            // ดึงข้อมูลจากแถวของนักเรียนแต่ละคน
+            var rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                var rowData = Array.from(row.querySelectorAll('td')).map(cell => cell.innerText.trim());
+                data.push(rowData);
+            });
+        
+            // สร้าง workbook และ worksheet
+            var wb = XLSX.utils.book_new();
+            var ws = XLSX.utils.aoa_to_sheet(data);
+        
+            // เพิ่ม worksheet เข้าไปใน workbook
+            XLSX.utils.book_append_sheet(wb, ws, "Attendance_with_Time");
+        
+            // กำหนดชื่อไฟล์โดยใช้ข้อมูลจาก DOM
+            var h1Text = document.querySelector('h1').innerText;  // ดึงข้อความทั้งหมดจาก h1
+            var courseName = h1Text.match(/รายวิชา (.*?) รหัสวิชา/)[1];  // ดึงชื่อวิชา
+            var courseCode = h1Text.match(/รหัสวิชา: (\d+)/)[1];  // ดึงรหัสวิชา
+            var section = h1Text.match(/\[(.*?)\]/)[1];  // ดึง section
+        
+            // สร้างชื่อไฟล์
+            XLSX.writeFile(wb, `ประวัติเวลาการเข้าเรียน_${courseName}_${courseCode}_${section}.xlsx`);
+        });
+    </script>
+</body>
+</html>

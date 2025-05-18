@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Tracking : รายชื่อนิสิต</title>
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/Table.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <link rel="icon" href="/image/favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+
+        th, td {
+            padding: 12px !important;
+            text-align: center !important;
+            border: 1px solid #ddd !important;
+        }
+
+        th {
+            font-weight: bold !important;
+        }
+
+        td {
+            vertical-align: middle !important;
+        }
+
+        .bg-success {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+        
+        .bg-warning {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+        }
+        
+        .bg-danger {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        .bg-leave {
+            background-color: #d1ecf1 !important;
+            color: #0c5460 !important;
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background-color: #6f42c1 !important;
+            border-color: #6f42c1 !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a32a8 !important;
+            border-color: #5a32a8 !important;
+        }
+
+        .btn-secondary {
+            background-color: #5a32a8 !important;
+            border-color: #5a32a8 !important;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a32a8 !important;
+            border-color: #5a32a8 !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <aside id="sidebar">
+            <div class="d-flex">
+                <button class="toggle-btn" type="button">
+                    <i class="lni lni-grid-alt"></i>
+                </button>
+                <div class="sidebar-logo">
+                    <a href="/">TRACKING</a>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="/classroom" class="sidebar-link">
+                        <i class="lni lni-network"></i>
+                        <span>ห้องเรียน</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/calculate" class="sidebar-link">
+                        <i class="lni lni-calculator"></i>
+                        <span>คำนวณคะแนน</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/graph" class="sidebar-link">
+                        <i class="lni lni-graph"></i>
+                        <span>ภาพรวมข้อมูล</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+                        <i class="lni lni-folder"></i>
+                        <span>เอกสารการลา</span>
+                    </a>
+                    <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="/leave-requests/<%= teacherId %>" class="sidebar-link">การลาที่รออนุมัติ</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/leave-history/<%= teacherId %>" class="sidebar-link">ประวัติการลา</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/notification" class="sidebar-link">
+                        <i class="lni lni-popup"></i>
+                        <span>การแจ้งเตือน</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-link">
+                    <i class="lni lni-exit"></i>
+                    <span>ออกจากระบบ</span>
+                </a>
+            </div>
+        </aside>
+        <div class="main p-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="mb-0">รายชื่อนิสิต รายวิชา <%= courseName %> รหัสวิชา : <%= courseCode %>[<%= section %>]</h1>
+                    <div class="d-flex">
+                        <a href="/attendance-rules/<%= courseCode %>/<%= section %>" class="btn btn-primary me-2">
+                            แก้ไขเวลาเข้าเรียน
+                        </a>
+                        <a href="/students/<%= courseCode %>/<%= section %>/edit" class="btn btn-primary">
+                            แก้ไขการเข้าเรียน
+                        </a>
+                    </div>
+                </div>                
+                <table class="table table-bordered mt-4">
+                    <thead>
+                        <tr>
+                            <th class="student-id-header">รหัสนิสิต</th>
+                            <th class="name-header">ชื่อ - นามสกุล</th>
+                            <% dates.forEach(date=> { %>
+                                <th class="attendance-header">
+                                    <%= date.short_date %>
+                                </th>
+                                <% }) %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% students.forEach(function(student) { %>
+                            <tr>
+                                <td>
+                                    <%= student.id_number %>
+                                </td>
+                                <td>
+                                    <%= student.first_name %> <%= student.last_name %>
+                                </td>
+                                <% student.attendance.forEach(function(attendance) { %>
+                                    <td class="<%= attendance && getStatusClass(attendance.status) %>">
+                                        <div>
+                                            <% if (attendance) { %>
+                                                <% if (attendance.status === 'present') { %> 
+                                                    เข้าเรียน
+                                                <% } else if (attendance.status === 'late') { %>
+                                                    สาย
+                                                <% } else if (attendance.status === 'absent') { %>
+                                                    ขาด
+                                                <% } else if (attendance.status === 'leave') { %>
+                                                    ลา
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </div>
+                                        <div>
+                                            <% if (attendance && attendance.is_edited == 1) { %> <!-- ตรวจสอบว่าแก้ไขแล้วหรือไม่ -->
+                                                ถูกแก้ไข
+                                            <% } else if (attendance && attendance.check_in_time) { %>
+                                                <%= attendance.check_in_time %> <!-- แสดงเวลาเช็คชื่อถ้าไม่ได้แก้ไข -->
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                <% }); %>                                
+                            </tr>
+                        <% }); %>
+                    </tbody>                    
+                </table>
+                <div class="d-flex justify-content-start mb-4">
+                    <button id="exportExcel" class="btn btn-primary me-3">Export สถานะการเข้าเรียน</button>
+                    <button id="exportExcelWithTime" class="btn btn-secondary">Export เวลาการเข้าเรียน</button>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="/Sidebar.js"></script>
+    <script>
+        // ข้อมูลที่จำเป็นสำหรับการสร้าง Excel
+        var dates = JSON.parse('<%- JSON.stringify(dates) %>');
+        var students = JSON.parse('<%- JSON.stringify(students) %>');
+        var courseName = '<%= courseName %>'; // ใช้สำหรับแสดงชื่อวิชา
+        var courseCode = '<%= courseCode %>'; // ใช้สำหรับแสดงเป็น string
+        var section = '<%= section %>'; // ใช้สำหรับแสดงเป็น string
+
+        console.log('Dates:', dates);
+        console.log('Students:', students);
+
+        // ฟังก์ชันทำให้ชื่อวิชาปลอดภัยสำหรับการใช้ในชื่อไฟล์
+        function sanitizeFileName(name) {
+            return name.replace(/[^a-zA-Z0-9ก-๙]/g, "_"); // แทนที่ตัวอักษรที่ไม่ใช่ a-z, A-Z, 0-9, ก-๙ ด้วย "_"
+        }
+
+        document.getElementById('exportExcel').addEventListener('click', function () {
+            // ตรวจสอบว่ามีข้อมูล dates และ students
+            if (!dates || dates.length === 0 || !students || students.length === 0) {
+                alert('ไม่มีข้อมูลให้ Export');
+                return;
+            }
+
+            // สร้าง array เพื่อเก็บข้อมูลสำหรับ Excel
+            var data = [['รหัสนิสิต', 'ชื่อสกุล', ...dates.map(date => date.short_date)]];
+
+            // เพิ่มข้อมูลนักเรียนแต่ละคน
+            students.forEach(student => {
+                var row = [
+                    student.id_number,
+                    `${student.first_name} ${student.last_name}`,
+                    ...student.attendance.map(attendance =>
+                        attendance && attendance.status === 'present' ? 'เข้าเรียน' :
+                        attendance && attendance.status === 'late' ? 'สาย' :
+                        attendance && attendance.status === 'absent' ? 'ขาด' : 
+                        attendance && attendance.status === 'leave' ? 'ลา' : '-'
+                    )
+                ];
+                data.push(row);
+            });
+
+            // สร้าง workbook และ worksheet
+            var wb = XLSX.utils.book_new();
+            var ws = XLSX.utils.aoa_to_sheet(data);
+
+            // เพิ่ม worksheet เข้าไปใน workbook
+            XLSX.utils.book_append_sheet(wb, ws, "Attendance");
+
+            // สร้างไฟล์ Excel และดาวน์โหลด
+            var sanitizedCourseName = sanitizeFileName(courseName); // ใช้ฟังก์ชัน sanitize
+            XLSX.writeFile(wb, `ประวัติการเข้าเรียน_${sanitizedCourseName}_${courseCode}_${section}.xlsx`);
+        });
+
+        document.getElementById('exportExcelWithTime').addEventListener('click', function () {
+            // ตรวจสอบว่ามีข้อมูล dates และ students
+            if (!dates || dates.length === 0 || !students || students.length === 0) {
+                alert('ไม่มีข้อมูลให้ Export');
+                return;
+            }
+
+            // สร้าง array เพื่อเก็บข้อมูลสำหรับ Excel
+            var data = [['รหัสนิสิต', 'ชื่อ-สกุล', ...dates.map(date => date.short_date)]];
+
+            // เพิ่มข้อมูลนักเรียนแต่ละคน
+            students.forEach(student => {
+                var row = [
+                    student.id_number,
+                    `${student.first_name} ${student.last_name}`,
+                    ...student.attendance.map(attendance =>
+                        attendance && attendance.check_in_time ? attendance.check_in_time : '-'
+                    )
+                ];
+                data.push(row);
+            });
+
+            // สร้าง workbook และ worksheet
+            var wb = XLSX.utils.book_new();
+            var ws = XLSX.utils.aoa_to_sheet(data);
+
+            // เพิ่ม worksheet เข้าไปใน workbook
+            XLSX.utils.book_append_sheet(wb, ws, "Attendance_with_Time");
+
+            // สร้างไฟล์ Excel และดาวน์โหลด
+            var sanitizedCourseName = sanitizeFileName(courseName); // ใช้ฟังก์ชัน sanitize
+            XLSX.writeFile(wb, `ประวัติเวลาการเข้าเรียน_${sanitizedCourseName}_${courseCode}_${section}.xlsx`);
+        });
+    </script>
+    <script>     
+        function formatTime(time) {
+            return new Date(time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
+</body>
+
+</html>
