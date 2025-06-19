@@ -1,0 +1,55 @@
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+#include <BLEBeacon.h>
+
+// UUID  Major และ Minor
+#define BEACON_UUID        "ba9d716c-bf7a-40a8-a204-2c626f7b2f95"
+#define COMBINED_VALUE     2264821  // รหัสวิชาและเลขตัวสุดท้ายเป็นsec
+#define DEVICE_NAME        "ClassRoom 2264835"
+
+//  Major และ Minor
+void splitMajorMinor(uint32_t combined, uint16_t& major, uint16_t& minor) {
+    major = (uint16_t)(combined / 10000);  // 3 หลักแรกเป็น Major
+    minor = (uint16_t)(combined % 10000);  // 4 หลักหลังเป็น Minor
+}
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Starting ESP32 Simple iBeacon");
+
+  uint16_t major, minor;
+  splitMajorMinor(COMBINED_VALUE, major, minor);
+
+  BLEDevice::init(DEVICE_NAME);
+  BLEServer *pServer = BLEDevice::createServer();
+
+  BLEBeacon oBeacon = BLEBeacon();
+  oBeacon.setManufacturerId(0x4C00); // Apple's company identifier
+  oBeacon.setProximityUUID(BLEUUID(BEACON_UUID));
+  oBeacon.setMajor(major);
+  oBeacon.setMinor(minor);
+  oBeacon.setSignalPower(-59); // The Measured Power (you can adjust this if needed)
+
+  BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
+  oAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED 0x04
+  
+  String beaconData = oBeacon.getData();
+  oAdvertisementData.setManufacturerData(beaconData);
+
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->setAdvertisementData(oAdvertisementData);
+
+  pAdvertising->start();
+  Serial.println("iBeacon advertising started");
+  Serial.print("Combined Value: ");
+  Serial.println(COMBINED_VALUE);
+  Serial.print("Major: ");
+  Serial.println(major);
+  Serial.print("Minor: ");
+  Serial.println(minor);
+}
+
+void loop() {
+  delay(2000);
+}
