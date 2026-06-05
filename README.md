@@ -1,5 +1,5 @@
 
-🎓 Senior Project
+# 🎓 Senior Project
 Tracking Student Attendance via Bluetooth Beacon
 (ระบบเช็คชื่อนิสิตเข้าห้องเรียนด้วยบลูทูธบีคอน)
 
