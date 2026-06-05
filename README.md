@@ -13,7 +13,7 @@ Tracking Student Attendance via Bluetooth Beacon
 </p>
 
 <p align="center">
-Senior Project | University of Phayao | 2024
+Senior Project | University of Phayao | 2024 /n
 วันที่สำเร็จโครงการ: 18 ตุลาคม 2567
 </p>
 
