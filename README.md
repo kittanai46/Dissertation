@@ -120,10 +120,8 @@ ESP32 ทำหน้าที่เป็น Bluetooth Beacon ภายใน�
 
 - ส่งสัญญาณ Bluetooth Beacon
 - ระบุห้องเรียนด้วย UUID, Major และ Minor
-- ตรวจสอบการเข้าห้องเรียน
-- เชื่อมต่อกับ Mobile Application
-- เชื่อมต่อกับ Database
-
+- กระจายสัญญาณ bluetooth Beacon ให้กับ Mobile Application
+- Mobile Application ไม่จำเป็นต้องเชื่อมต่อกับ bluetooth แค่ค้นหาสัญญาณให้พบก็เพียงพอ
 ---
 
 # 🗄️ Database
