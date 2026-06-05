@@ -59,7 +59,7 @@ Senior Project | University of Phayao | 2024
   <img src="preview/ApplicationPreview.png">
 </p>
 
-Mobile Application ถูกพัฒนาด้วย Flutter เพื่อรองรับการใช้งานทั้งนิสิตและอาจารย์
+Mobile Application ถูกพัฒนาด้วย Flutter เพื่อรองรับการใช้งานทั้ง ios และ andrid
 
 ## 👨‍🎓 Student Features
 
