@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:ClassTracking/api_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class UserPage extends StatefulWidget {
   final Function(String, String, String, String) onUserFetched;
@@ -32,10 +31,8 @@ class _UserPageState extends State<UserPage> {
     });
 
     try {
-      final response = await http.get(
-        Uri.parse(APIConstants.getUsersEndpoint()),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(Duration(seconds: 10));
+      final response =
+          await APIConstants.makeRequest(APIConstants.getUsersEndpoint());
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonResponse = jsonDecode(response.body);

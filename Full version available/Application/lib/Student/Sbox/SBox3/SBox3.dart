@@ -149,7 +149,7 @@ class _SBox3State extends State<SBox3> {
 
   Future<void> _pickFile(bool isLeaveDocument) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
       );
