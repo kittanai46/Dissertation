@@ -8,12 +8,14 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class APIConstants {
   static const String baseURL = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.1.63:4000',
+    // During USB development, run: adb reverse tcp:4000 tcp:4000
+    // Override this at build time for an emulator or production:
+    // --dart-define=API_BASE_URL=https://api.example.com
+    defaultValue: 'http://127.0.0.1:4000',
   );
 
   static Map<String, String> _headers = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer <your-token>',
   };
 
   static IO.Socket? socket;
@@ -179,7 +181,12 @@ class APIConstants {
           'password': password,
         },
       );
-      return jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
+      final token = result['token'];
+      if (token is String && token.isNotEmpty) {
+        _headers['Authorization'] = 'Bearer $token';
+      }
+      return result;
     } catch (e) {
       print('Error during login: $e');
       return {'success': false, 'error': e.toString()};
@@ -261,6 +268,10 @@ class APIConstants {
     try {
       var request = http.MultipartRequest(
           'POST', Uri.parse('$baseURL${getLeaveRequestEndpoint()}'));
+      final authorization = _headers['Authorization'];
+      if (authorization != null) {
+        request.headers['Authorization'] = authorization;
+      }
 
       request.fields.addAll(
           leaveData.map((key, value) => MapEntry(key, value.toString())));

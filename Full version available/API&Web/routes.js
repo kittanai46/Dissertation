@@ -1,14 +1,18 @@
 // routes.js
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const dbConnection = require('./dbConnection');
 const { parseISO, isAfter, formatISO } = require('date-fns');
 const dateFns = require('date-fns');
 const { format } = require('date-fns');
 const multer = require('multer');
-const upload = multer();
+const { createApiToken, requireApiAuth } = require('./auth');
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024, files: 2 }
+});
 
 
 
@@ -43,6 +47,13 @@ const ifNotLoggedIn = (req, res, next) => {
 const ifLoggedin = (req, res, next) => {
     if (req.session.isLoggedIn) {
         return res.redirect('/home');
+    }
+    next();
+};
+
+const ifRegistrationEnabled = (req, res, next) => {
+    if (process.env.ALLOW_REGISTRATION !== 'true') {
+        return res.status(404).send('Not Found');
     }
     next();
 };
@@ -109,7 +120,7 @@ const ownsCourseFromBody = async (req, res, next) => {
 
 // Page
 // Register
-router.get('/register', (req, res) => {
+router.get('/register', ifRegistrationEnabled, (req, res) => {
     res.render('register');
 });
 
@@ -690,7 +701,7 @@ router.get('/graph', ifNotLoggedIn, ownsCourse, async (req, res) => {
 });
 
 // Route สำหรับดึงวันที่ที่มีการเช็คชื่อสำหรับรายวิชาที่เลือก
-router.get('/getDatesForCourse', async (req, res) => {
+router.get('/getDatesForCourse', ifNotLoggedIn, async (req, res) => {
     const course = req.query.course;
 
     if (!course) {
@@ -714,7 +725,7 @@ router.get('/getDatesForCourse', async (req, res) => {
 });
 
 // Route สำหรับดึงข้อมูลการเข้าชั้นเรียน
-router.get('/getAttendanceData', async (req, res) => {
+router.get('/getAttendanceData', ifNotLoggedIn, async (req, res) => {
     const course = req.query.course;
     const date = req.query.date;
 
@@ -748,7 +759,7 @@ router.get('/getAttendanceData', async (req, res) => {
     }
 });
 
-router.get('/getAttendanceByTime', async (req, res) => {
+router.get('/getAttendanceByTime', ifNotLoggedIn, async (req, res) => {
     const course = req.query.course;
     const date = req.query.date;
 
@@ -788,7 +799,7 @@ ORDER BY
 });
 
 // Route สำหรับดึงข้อมูลการเข้าชั้นเรียนรวมของทุกวันสำหรับรายวิชาที่เลือก
-router.get('/getAttendanceDataForAllDates', async (req, res) => {
+router.get('/getAttendanceDataForAllDates', ifNotLoggedIn, async (req, res) => {
     const course = req.query.course;
 
     if (!course) {
@@ -880,7 +891,7 @@ router.get('/leave-history/:teacherId', ifNotLoggedIn, ownsCourse, async (req, r
 });
 
 // Route for viewing the leave document
-router.get('/view-leave-document/:id', async (req, res) => {
+router.get('/view-leave-document/:id', ifNotLoggedIn, async (req, res) => {
     const { id } = req.params;
     try {
         const [result] = await dbConnection.execute(
@@ -902,7 +913,7 @@ router.get('/view-leave-document/:id', async (req, res) => {
 });
 
 // Route for viewing the medical certificate
-router.get('/view-medical-certificate/:id', async (req, res) => {
+router.get('/view-medical-certificate/:id', ifNotLoggedIn, async (req, res) => {
     const { id } = req.params;
     try {
         const [result] = await dbConnection.execute(
@@ -924,7 +935,7 @@ router.get('/view-medical-certificate/:id', async (req, res) => {
 });
 
 // Route สำหรับการอนุมัติหรือปฏิเสธคำขอลางาน
-router.post('/web/approve-leave-request/:leaveRequestId', async (req, res) => {
+router.post('/web/approve-leave-request/:leaveRequestId', ifNotLoggedIn, async (req, res) => {
     const { leaveRequestId } = req.params;
     let { status, comment } = req.body; // รับค่า status และ comment จากฟอร์ม
     const approver_id = req.session.userID; // ดึง approver_id จาก session
@@ -966,7 +977,7 @@ router.post('/web/approve-leave-request/:leaveRequestId', async (req, res) => {
 });
 
 // API register
-router.post('/register', [
+router.post('/register', ifRegistrationEnabled, [
     body('role').isIn(['student', 'teacher']).withMessage('Invalid role selected!'),
     body('first_name').trim().not().isEmpty().withMessage('First Name cannot be empty!'),
     body('last_name').trim().not().isEmpty().withMessage('Last Name cannot be empty!'),
@@ -1469,7 +1480,7 @@ router.get('/notification', ifNotLoggedIn, async (req, res) => {
 });
 
 // Route สำหรับบันทึกการเข้าเรียน
-router.post('/log_attendance', async (req, res) => {
+router.post('/log_attendance', requireApiAuth, async (req, res) => {
     const { id_number, major, minor, schedule_date, schedule_time } = req.body;
 
     if (!id_number || major === undefined || minor === undefined || !schedule_date || !schedule_time) {
@@ -1586,6 +1597,7 @@ router.post('/login', async (req, res) => {
                 return res.status(200).json({
                     success: true,
                     message: 'Login successful',
+                    token: createApiToken(user),
                     user: {
                         id_number: user.id_number,
                         first_name: user.first_name,
@@ -1604,6 +1616,9 @@ router.post('/login', async (req, res) => {
         return res.status(500).json({ success: false, error: 'An error occurred during login' });
     }
 });
+
+// Mobile API routes accept either the existing web session or a Bearer token.
+router.use('/api', requireApiAuth);
 
 //ดึงข้อมูลเข้าแอพ
 // เพิ่ม route นี้ใน routes.js
@@ -1832,10 +1847,10 @@ router.post('/api/leave-request', upload.fields([
     let leave_document = null;
     let medical_certificate = null;
 
-    if (req.files['leave_document']) {
+    if (req.files && req.files['leave_document']) {
         leave_document = req.files['leave_document'][0].buffer;
     }
-    if (req.files['medical_certificate']) {
+    if (req.files && req.files['medical_certificate']) {
         medical_certificate = req.files['medical_certificate'][0].buffer;
     }
 
@@ -1864,60 +1879,6 @@ router.post('/api/leave-request', upload.fields([
     }
 });
 
-//ประวัติลา
-router.post('/api/leave-request', upload.fields([
-    { name: 'leave_document', maxCount: 1 },
-    { name: 'medical_certificate', maxCount: 1 }
-]), async (req, res) => {
-    const {
-        student_id,
-        course_id,
-        leave_type_id,
-        reason,
-        start_date,
-        end_date,
-        status = 'รออนุมัติ'
-    } = req.body;
-
-    let leave_document_url = null;
-    let medical_certificate_url = null;
-
-    if (req.files) {
-        if (req.files['leave_document']) {
-            leave_document_url = '/uploads/' + req.files['leave_document'][0].filename;
-        }
-        if (req.files['medical_certificate']) {
-            medical_certificate_url = '/uploads/' + req.files['medical_certificate'][0].filename;
-        }
-    }
-
-    // ตรวจสอบและแทนที่ค่า undefined ด้วย null
-    const safeValues = [
-        student_id || null,
-        course_id || null,
-        null,  // teacher_id เป็น null
-        leave_type_id || null,
-        reason || null,
-        start_date || null,
-        end_date || null,
-        status,
-        leave_document_url,
-        medical_certificate_url
-    ];
-
-    try {
-        const [result] = await dbConnection.execute(`
-          INSERT INTO leave_requests 
-          (student_id, course_id, teacher_id, leave_type_id, reason, start_date, end_date, status, leave_document_url, medical_certificate_url) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, safeValues);
-
-        res.json({ success: true, leave_request_id: result.insertId });
-    } catch (error) {
-        console.error('Error submitting leave request:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
 router.post('/api/leave-attachment', async (req, res) => {
     const { leave_request_id, file_type, file_url } = req.body;
     try {
@@ -2003,7 +1964,7 @@ router.post('/api/approve-leave-request/:leaveRequestId', async (req, res) => {
 });
 
 // API สำหรับดาวน์โหลดไฟล์
-router.get('/download/:fileType/:leaveRequestId', async (req, res) => {
+router.get('/download/:fileType/:leaveRequestId', requireApiAuth, async (req, res) => {
     const { fileType, leaveRequestId } = req.params;
     try {
         let columnName;

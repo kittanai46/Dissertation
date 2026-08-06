@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:ClassTracking/api_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -163,11 +162,10 @@ class _PBox3State extends State<PBox3> {
 
   Future<void> _viewDocument(String leaveRequestId, String documentType) async {
     try {
-      final url = Uri.parse(
-          '${APIConstants.baseURL}/download/$documentType/$leaveRequestId');
-      print('Downloading document from: $url');
+      final endpoint = '/download/$documentType/$leaveRequestId';
+      print('Downloading document from: ${APIConstants.baseURL}$endpoint');
 
-      final response = await http.get(url);
+      final response = await APIConstants.makeRequest(endpoint);
       if (response.statusCode == 200) {
         final bytes = response.bodyBytes;
         if (bytes.isEmpty) {

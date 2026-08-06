@@ -1,28 +1,52 @@
 const express = require('express');
 const path = require('path');
 const cookieSession = require('cookie-session');
+
+if (typeof process.loadEnvFile === 'function') {
+  try {
+    process.loadEnvFile(path.join(__dirname, '.env'));
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+}
+
 const routes = require('./routes');
 const dbConnection = require('./dbConnection');
-const cors = require('cors'); // เพิ่ม CORS
+const cors = require('cors');
 const app = express();
 
-// ตั้งค่า CORS
+const allowedOrigins = (process.env.CORS_ORIGINS || '*')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+const sessionKeys = (process.env.SESSION_KEYS || 'development-key-change-me')
+  .split(',')
+  .map(key => key.trim())
+  .filter(Boolean);
+
+if (process.env.NODE_ENV === 'production' && sessionKeys.includes('development-key-change-me')) {
+  throw new Error('SESSION_KEYS must be configured in production');
+}
+
+app.set('trust proxy', 1);
 app.use(cors({
-  origin: '*', // หรือกำหนด origin ที่เฉพาะเจาะจง
+  origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// ตั้งค่า cookie-session
 app.use(cookieSession({
     name: 'session',
-    keys: ['key1', 'key2'], // คีย์สำหรับการเข้ารหัส
-    maxAge: 24 * 60 * 60 * 1000 // อายุของ session (1 วัน)
+    keys: sessionKeys,
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.COOKIE_SECURE === 'true'
 }));
 
 // Middleware
-app.use(express.json()); // สำหรับ parsing application/json
-app.use(express.urlencoded({ extended: true })); // สำหรับ parsing application/x-www-form-urlencoded
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ตั้งค่า view engine เป็น ejs
@@ -35,15 +59,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// ตรวจสอบการเชื่อมต่อฐานข้อมูล
-dbConnection.getConnection()
-    .then(connection => {
-        console.log("Database connected successfully");
-        connection.release();
-    })
-    .catch(error => {
-        console.error("Database connection failed:", error);
-    });
+app.get('/health', async (req, res) => {
+  try {
+    await dbConnection.query('SELECT 1');
+    res.json({ status: 'ok', database: 'connected' });
+  } catch (error) {
+    res.status(503).json({ status: 'error', database: 'disconnected' });
+  }
+});
 
 // Routes
 app.use('/', routes);
@@ -66,14 +89,9 @@ app.use((error, req, res, next) => {
     });
   });
 
-  app.use(cors({
-    origin: '*', // หรือกำหนด origin ที่เฉพาะเจาะจง
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
-
 // Start server
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => console.log(`Server is running on http://${HOST}:${PORT}`));
 
 module.exports = app; // เพื่อการทดสอบ

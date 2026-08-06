@@ -1,0 +1,8 @@
+.DS_Store
+
+API&Web/.env
+API&Web/node_modules/
+API&Web/npm-debug.log*
+
+Application/build/
+Application/.dart_tool/
